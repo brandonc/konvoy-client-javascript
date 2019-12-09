@@ -150,7 +150,7 @@ import * as fs from 'fs';
 import * as http from 'http';
 
 export class HttpError extends Error {
-    constructor (public response: http.IncomingMessage, public body: any, public statusCode?: number) {
+    constructor(public response: http.IncomingMessage, public body: any, public statusCode?: number) {
         super('HTTP request failed');
         this.name = 'HttpError';
     }
@@ -161,9 +161,84 @@ export interface RequestDetailedFile {
     options?: {
         filename?: string;
         contentType?: string;
-    }
+    };
 }
 
 export type RequestFile = string | Buffer | fs.ReadStream | RequestDetailedFile;
 
-export const APIS = [AdmissionregistrationApi, AdmissionregistrationV1Api, AdmissionregistrationV1beta1Api, ApiextensionsApi, ApiextensionsV1Api, ApiextensionsV1beta1Api, ApiregistrationApi, ApiregistrationV1Api, ApiregistrationV1beta1Api, ApisApi, AppsApi, AppsV1Api, AuthenticationApi, AuthenticationV1Api, AuthenticationV1beta1Api, AuthorizationApi, AuthorizationV1Api, AuthorizationV1beta1Api, AutoscalingApi, AutoscalingV1Api, AutoscalingV2beta1Api, AutoscalingV2beta2Api, BatchApi, BatchV1Api, BatchV1beta1Api, CertificatesApi, CertificatesV1beta1Api, CertmanagerV1alpha1Api, ConfigGatekeeperShV1alpha1Api, CoordinationApi, CoordinationV1Api, CoordinationV1beta1Api, CoreApi, CoreKubefedIoV1alpha1Api, CoreKubefedIoV1beta1Api, CoreV1Api, CrdProjectcalicoOrgV1Api, CustomObjectsApi, DexCoreosComV1Api, DexMesosphereIoV1alpha1Api, EventsApi, EventsV1beta1Api, ExtensionsApi, ExtensionsV1beta1Api, KommanderMesosphereIoV1beta1Api, KubeaddonsMesosphereIoV1beta1Api, KudoDevV1beta1Api, LogsApi, MiniocontrollerMinIoV1beta1Api, MonitoringCoreosComV1Api, MulticlusterdnsKubefedIoV1alpha1Api, NetworkingApi, NetworkingV1Api, NetworkingV1beta1Api, NodeApi, NodeV1beta1Api, PolicyApi, PolicyV1beta1Api, RbacAuthorizationApi, RbacAuthorizationV1Api, RbacAuthorizationV1beta1Api, SchedulingApi, SchedulingKubefedIoV1alpha1Api, SchedulingV1Api, SchedulingV1beta1Api, SnapshotStorageV1alpha1Api, StorageApi, StorageV1Api, StorageV1beta1Api, TemplatesGatekeeperShV1alpha1Api, TemplatesGatekeeperShV1beta1Api, TypesKubefedIoV1beta1Api, VeleroIoV1Api, VersionApi];
+export const APIS = [
+    AdmissionregistrationApi,
+    AdmissionregistrationV1Api,
+    AdmissionregistrationV1beta1Api,
+    ApiextensionsApi,
+    ApiextensionsV1Api,
+    ApiextensionsV1beta1Api,
+    ApiregistrationApi,
+    ApiregistrationV1Api,
+    ApiregistrationV1beta1Api,
+    ApisApi,
+    AppsApi,
+    AppsV1Api,
+    AuthenticationApi,
+    AuthenticationV1Api,
+    AuthenticationV1beta1Api,
+    AuthorizationApi,
+    AuthorizationV1Api,
+    AuthorizationV1beta1Api,
+    AutoscalingApi,
+    AutoscalingV1Api,
+    AutoscalingV2beta1Api,
+    AutoscalingV2beta2Api,
+    BatchApi,
+    BatchV1Api,
+    BatchV1beta1Api,
+    CertificatesApi,
+    CertificatesV1beta1Api,
+    CertmanagerV1alpha1Api,
+    ConfigGatekeeperShV1alpha1Api,
+    CoordinationApi,
+    CoordinationV1Api,
+    CoordinationV1beta1Api,
+    CoreApi,
+    CoreKubefedIoV1alpha1Api,
+    CoreKubefedIoV1beta1Api,
+    CoreV1Api,
+    CrdProjectcalicoOrgV1Api,
+    CustomObjectsApi,
+    DexCoreosComV1Api,
+    DexMesosphereIoV1alpha1Api,
+    EventsApi,
+    EventsV1beta1Api,
+    ExtensionsApi,
+    ExtensionsV1beta1Api,
+    KommanderMesosphereIoV1beta1Api,
+    KubeaddonsMesosphereIoV1beta1Api,
+    KudoDevV1beta1Api,
+    LogsApi,
+    MiniocontrollerMinIoV1beta1Api,
+    MonitoringCoreosComV1Api,
+    MulticlusterdnsKubefedIoV1alpha1Api,
+    NetworkingApi,
+    NetworkingV1Api,
+    NetworkingV1beta1Api,
+    NodeApi,
+    NodeV1beta1Api,
+    PolicyApi,
+    PolicyV1beta1Api,
+    RbacAuthorizationApi,
+    RbacAuthorizationV1Api,
+    RbacAuthorizationV1beta1Api,
+    SchedulingApi,
+    SchedulingKubefedIoV1alpha1Api,
+    SchedulingV1Api,
+    SchedulingV1beta1Api,
+    SnapshotStorageV1alpha1Api,
+    StorageApi,
+    StorageV1Api,
+    StorageV1beta1Api,
+    TemplatesGatekeeperShV1alpha1Api,
+    TemplatesGatekeeperShV1beta1Api,
+    TypesKubefedIoV1beta1Api,
+    VeleroIoV1Api,
+    VersionApi,
+];
