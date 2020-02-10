@@ -3,3 +3,4 @@ package/.nyc_output/
 package/coverage/
 package/dist/
 package/konvoy-client-node*.tgz
+.node-version
