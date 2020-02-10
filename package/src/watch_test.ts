@@ -39,7 +39,7 @@ describe('Watch', () => {
         const watch = new Watch(kc);
     });
 
-    it('should watch correctly', () => {
+    it('should watch correctly', async () => {
         const kc = new KubeConfig();
         Object.assign(kc, fakeConfig);
         const fakeRequestor = mock(DefaultRequest);
@@ -75,7 +75,7 @@ describe('Watch', () => {
         let doneCalled = false;
         let doneErr: any;
 
-        watch.watch(
+        await watch.watch(
             path,
             {},
             (phase: string, obj: string) => {
@@ -112,7 +112,7 @@ describe('Watch', () => {
         expect(doneErr).to.deep.equal(errIn);
     });
 
-    it('should handle errors correctly', () => {
+    it('should handle errors correctly', async () => {
         const kc = new KubeConfig();
         Object.assign(kc, fakeConfig);
         const fakeRequestor = mock(DefaultRequest);
@@ -130,6 +130,7 @@ describe('Watch', () => {
             pipe: (stream) => {
                 stream.write(JSON.stringify(obj1) + '\n');
                 stream.emit('error', errIn);
+                stream.emit('close');
             },
         };
 
@@ -140,9 +141,9 @@ describe('Watch', () => {
         const receivedTypes: string[] = [];
         const receivedObjects: string[] = [];
         let doneCalled = false;
-        let doneErr: any;
+        let doneErr: any[] = [];
 
-        watch.watch(
+        await watch.watch(
             path,
             {},
             (phase: string, obj: string) => {
@@ -151,7 +152,7 @@ describe('Watch', () => {
             },
             (err: any) => {
                 doneCalled = true;
-                doneErr = err;
+                doneErr.push(err);
             },
         );
 
@@ -168,10 +169,12 @@ describe('Watch', () => {
         expect(receivedObjects).to.deep.equal([obj1.object]);
 
         expect(doneCalled).to.equal(true);
-        expect(doneErr).to.deep.equal(errIn);
+        expect(doneErr.length).to.equal(2);
+        expect(doneErr[0]).to.deep.equal(errIn);
+        expect(doneErr[1]).to.deep.equal(errIn);
     });
 
-    it('should handle server side close correctly', () => {
+    it('should handle server side close correctly', async () => {
         const kc = new KubeConfig();
         Object.assign(kc, fakeConfig);
         const fakeRequestor = mock(DefaultRequest);
@@ -200,7 +203,7 @@ describe('Watch', () => {
         let doneCalled = false;
         let doneErr: any;
 
-        watch.watch(
+        await watch.watch(
             path,
             {},
             (phase: string, obj: string) => {
@@ -229,7 +232,7 @@ describe('Watch', () => {
         expect(doneErr).to.be.null;
     });
 
-    it('should ignore JSON parse errors', () => {
+    it('should ignore JSON parse errors', async () => {
         const kc = new KubeConfig();
         Object.assign(kc, fakeConfig);
         const fakeRequestor = mock(DefaultRequest);
@@ -256,7 +259,7 @@ describe('Watch', () => {
         const receivedTypes: string[] = [];
         const receivedObjects: string[] = [];
 
-        watch.watch(
+        await watch.watch(
             path,
             {},
             (recievedType: string, recievedObject: string) => {

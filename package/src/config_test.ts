@@ -172,13 +172,6 @@ describe('KubeConfig', () => {
         });
     });
 
-    describe('loadFromString', () => {
-        it('should throw with a bad version', () => {
-            const kc = new KubeConfig();
-            expect(() => kc.loadFromString('apiVersion: v2')).to.throw('unknown version: v2');
-        });
-    });
-
     describe('loadFromFile', () => {
         it('should load the kubeconfig file properly', () => {
             const kc = new KubeConfig();
@@ -219,7 +212,7 @@ describe('KubeConfig', () => {
             kc.applytoHTTPSOptions(opts);
 
             expect(opts).to.deep.equal({
-                headers: [],
+                headers: {},
                 ca: new Buffer('CADATA2', 'utf-8'),
                 cert: new Buffer('USER2_CADATA', 'utf-8'),
                 key: new Buffer('USER2_CKDATA', 'utf-8'),
@@ -236,7 +229,7 @@ describe('KubeConfig', () => {
             };
             await kc.applyToRequest(opts);
             expect(opts).to.deep.equal({
-                headers: [],
+                headers: {},
                 ca: new Buffer('CADATA2', 'utf-8'),
                 auth: {
                     username: 'foo',
@@ -1071,6 +1064,32 @@ describe('KubeConfig', () => {
                 return;
             }
             expect(cluster.server).to.equal('http://kubernetes:80');
+        });
+
+        it('should load from cluster with ipv6', () => {
+            const token = 'token';
+            const cert = 'cert';
+            mockfs({
+                '/var/run/secrets/kubernetes.io/serviceaccount': {
+                    'ca.crt': cert,
+                    token,
+                },
+            });
+
+            process.env.KUBERNETES_SERVICE_HOST = '::1234:5678';
+            process.env.KUBERNETES_SERVICE_PORT = '80';
+            const kc = new KubeConfig();
+            kc.loadFromDefault();
+            mockfs.restore();
+            delete process.env.KUBERNETES_SERVICE_HOST;
+            delete process.env.KUBERNETES_SERVICE_PORT;
+
+            const cluster = kc.getCurrentCluster();
+            expect(cluster).to.not.be.null;
+            if (!cluster) {
+                return;
+            }
+            expect(cluster.server).to.equal('http://[::1234:5678]:80');
         });
 
         it('should default to localhost', () => {
