@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # exit on any error
-set -e 
+set -e
 
 version=$(cat package.json | jq -r .version)
 
@@ -15,8 +15,8 @@ case "${confirm}" in
   * ) echo "Aborting"; exit 0;;
 esac
 
-git tag ${version} 
-git push upstream ${version} 
+git tag ${version}
+git push origin ${version}
 
 npm publish
 npm version patch -m "Update to version ${version}"
