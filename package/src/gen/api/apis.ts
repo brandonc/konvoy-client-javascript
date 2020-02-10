@@ -90,8 +90,6 @@ export * from './kommanderMesosphereIoV1beta1Api';
 import { KommanderMesosphereIoV1beta1Api } from './kommanderMesosphereIoV1beta1Api';
 export * from './kubeaddonsMesosphereIoV1beta1Api';
 import { KubeaddonsMesosphereIoV1beta1Api } from './kubeaddonsMesosphereIoV1beta1Api';
-export * from './kudoDevV1beta1Api';
-import { KudoDevV1beta1Api } from './kudoDevV1beta1Api';
 export * from './logsApi';
 import { LogsApi } from './logsApi';
 export * from './miniocontrollerMinIoV1beta1Api';
@@ -146,6 +144,8 @@ export * from './veleroIoV1Api';
 import { VeleroIoV1Api } from './veleroIoV1Api';
 export * from './versionApi';
 import { VersionApi } from './versionApi';
+export * from './workspacesKommanderMesosphereIoV1alpha1Api';
+import { WorkspacesKommanderMesosphereIoV1alpha1Api } from './workspacesKommanderMesosphereIoV1alpha1Api';
 import * as fs from 'fs';
 import * as http from 'http';
 
@@ -213,7 +213,6 @@ export const APIS = [
     ExtensionsV1beta1Api,
     KommanderMesosphereIoV1beta1Api,
     KubeaddonsMesosphereIoV1beta1Api,
-    KudoDevV1beta1Api,
     LogsApi,
     MiniocontrollerMinIoV1beta1Api,
     MonitoringCoreosComV1Api,
@@ -241,4 +240,5 @@ export const APIS = [
     TypesKubefedIoV1beta1Api,
     VeleroIoV1Api,
     VersionApi,
+    WorkspacesKommanderMesosphereIoV1alpha1Api,
 ];

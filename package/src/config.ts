@@ -1,6 +1,7 @@
 import execa = require('execa');
 import fs = require('fs');
 import https = require('https');
+import net = require('net');
 import path = require('path');
 
 import yaml = require('js-yaml');
@@ -156,9 +157,6 @@ export class KubeConfig {
 
     public loadFromString(config: string) {
         const obj = yaml.safeLoad(config) as any;
-        if (obj.apiVersion !== 'v1') {
-            throw new TypeError('unknown version: ' + obj.apiVersion);
-        }
         this.clusters = newClusters(obj.clusters);
         this.contexts = newContexts(obj.contexts);
         this.users = newUsers(obj.users);
@@ -197,11 +195,17 @@ export class KubeConfig {
             scheme = 'http';
         }
 
+        // Wrap raw IPv6 addresses in brackets.
+        let serverHost = host;
+        if (host && net.isIPv6(host)) {
+            serverHost = `[${host}]`;
+        }
+
         this.clusters = [
             {
                 name: clusterName,
                 caFile: `${pathPrefix}${Config.SERVICEACCOUNT_CA_PATH}`,
-                server: `${scheme}://${host}:${port}`,
+                server: `${scheme}://${serverHost}:${port}`,
                 skipTLSVerify: false,
             },
         ];
@@ -397,7 +401,7 @@ export class KubeConfig {
         });
 
         if (!opts.headers) {
-            opts.headers = [];
+            opts.headers = {};
         }
         if (authenticator) {
             await authenticator.applyAuthentication(user, opts);

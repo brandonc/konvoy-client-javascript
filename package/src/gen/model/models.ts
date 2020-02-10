@@ -21,9 +21,6 @@ export * from './comCoreosMonitoringV1PodMonitorList';
 export * from './comCoreosMonitoringV1PrometheusList';
 export * from './comCoreosMonitoringV1PrometheusRuleList';
 export * from './comCoreosMonitoringV1ServiceMonitorList';
-export * from './devKudoV1beta1InstanceList';
-export * from './devKudoV1beta1OperatorList';
-export * from './devKudoV1beta1OperatorVersionList';
 export * from './extensionsV1beta1HTTPIngressPath';
 export * from './extensionsV1beta1HTTPIngressRuleValue';
 export * from './extensionsV1beta1Ingress';
@@ -45,6 +42,7 @@ export * from './ioKubefedMulticlusterdnsV1alpha1IngressDNSRecordList';
 export * from './ioKubefedMulticlusterdnsV1alpha1ServiceDNSRecordList';
 export * from './ioKubefedSchedulingV1alpha1ReplicaSchedulingPreferenceList';
 export * from './ioKubefedTypesV1beta1FederatedAddonList';
+export * from './ioKubefedTypesV1beta1FederatedAddonsDeploymentList';
 export * from './ioKubefedTypesV1beta1FederatedClusterAddonList';
 export * from './ioKubefedTypesV1beta1FederatedClusterRoleBindingList';
 export * from './ioKubefedTypesV1beta1FederatedClusterRoleList';
@@ -60,8 +58,23 @@ export * from './ioKubefedTypesV1beta1FederatedRoleList';
 export * from './ioKubefedTypesV1beta1FederatedSecretList';
 export * from './ioKubefedTypesV1beta1FederatedServiceAccountList';
 export * from './ioKubefedTypesV1beta1FederatedServiceList';
+export * from './ioMesosphereDexV1alpha1Client';
 export * from './ioMesosphereDexV1alpha1ClientList';
+export * from './ioMesosphereDexV1alpha1ClientSpec';
+export * from './ioMesosphereDexV1alpha1ClientSpecClientSecretRef';
+export * from './ioMesosphereDexV1alpha1Connector';
 export * from './ioMesosphereDexV1alpha1ConnectorList';
+export * from './ioMesosphereDexV1alpha1ConnectorSpec';
+export * from './ioMesosphereDexV1alpha1ConnectorSpecGithub';
+export * from './ioMesosphereDexV1alpha1ConnectorSpecGithubClientSecretRef';
+export * from './ioMesosphereDexV1alpha1ConnectorSpecGithubOrgs';
+export * from './ioMesosphereDexV1alpha1ConnectorSpecGithubRootCASecretRef';
+export * from './ioMesosphereDexV1alpha1ConnectorSpecLdap';
+export * from './ioMesosphereDexV1alpha1ConnectorSpecLdapBindSecretRef';
+export * from './ioMesosphereDexV1alpha1ConnectorSpecLdapGroupSearch';
+export * from './ioMesosphereDexV1alpha1ConnectorSpecLdapUserSearch';
+export * from './ioMesosphereDexV1alpha1ConnectorSpecOidc';
+export * from './ioMesosphereDexV1alpha1ConnectorSpecOidcClientSecretRef';
 export * from './ioMesosphereKommanderV1beta1CloudProviderAccount';
 export * from './ioMesosphereKommanderV1beta1CloudProviderAccountList';
 export * from './ioMesosphereKommanderV1beta1CloudProviderAccountSpec';
@@ -84,6 +97,7 @@ export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRu
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntimeContainerd';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntimeContainerdConfigData';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterGpu';
+export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterHelmRepository';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterImageRegistries';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetes';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesAdmissionPlugins';
@@ -91,11 +105,12 @@ export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesC
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlane';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlaneCertificate';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlaneKeepalived';
+export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesKubelet';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesNetworking';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesPreflightChecks';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterLabels';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterNodePools';
-export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterPackageRepository';
+export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterOsPackages';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterTaints';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecProvisioner';
 export * from './ioMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAws';
@@ -120,14 +135,6 @@ export * from './ioMesosphereKommanderV1beta1LicenseList';
 export * from './ioMesosphereKommanderV1beta1LicenseSpec';
 export * from './ioMesosphereKommanderV1beta1LicenseSpecLicenseRef';
 export * from './ioMesosphereKommanderV1beta1LicenseStatus';
-export * from './ioMesosphereKommanderV1beta1Project';
-export * from './ioMesosphereKommanderV1beta1ProjectList';
-export * from './ioMesosphereKommanderV1beta1ProjectSpec';
-export * from './ioMesosphereKommanderV1beta1ProjectSpecPlacement';
-export * from './ioMesosphereKommanderV1beta1ProjectSpecPlacementClusterSelector';
-export * from './ioMesosphereKommanderV1beta1ProjectSpecPlacementClusterSelectorMatchExpressions';
-export * from './ioMesosphereKommanderV1beta1ProjectSpecPlacementClusters';
-export * from './ioMesosphereKommanderV1beta1ProjectStatus';
 export * from './ioMesosphereKommanderV1beta1VirtualGroup';
 export * from './ioMesosphereKommanderV1beta1VirtualGroupClusterRoleBinding';
 export * from './ioMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingList';
@@ -136,10 +143,38 @@ export * from './ioMesosphereKommanderV1beta1VirtualGroupList';
 export * from './ioMesosphereKommanderV1beta1VirtualGroupRoleBinding';
 export * from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingList';
 export * from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpec';
+export * from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement';
+export * from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusterSelector';
+export * from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusterSelectorMatchExpressions';
+export * from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusters';
 export * from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef';
 export * from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef';
 export * from './ioMesosphereKommanderV1beta1VirtualGroupSpec';
 export * from './ioMesosphereKommanderV1beta1VirtualGroupSpecSubjects';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1Project';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1ProjectList';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRole';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRoleList';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpec';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpecRules';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRoleStatus';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1ProjectSpec';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1ProjectStatus';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBinding';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingList';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingSpec';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingStatus';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBinding';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingList';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingSpec';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingStatus';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1Workspace';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceList';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceRole';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleList';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleStatus';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceSpec';
+export * from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceStatus';
 export * from './ioMesosphereKubeaddonsV1beta1AddonList';
 export * from './ioMesosphereKubeaddonsV1beta1AddonRepositoryList';
 export * from './ioMesosphereKubeaddonsV1beta1ClusterAddonList';
@@ -686,9 +721,6 @@ import { ComCoreosMonitoringV1PodMonitorList } from './comCoreosMonitoringV1PodM
 import { ComCoreosMonitoringV1PrometheusList } from './comCoreosMonitoringV1PrometheusList';
 import { ComCoreosMonitoringV1PrometheusRuleList } from './comCoreosMonitoringV1PrometheusRuleList';
 import { ComCoreosMonitoringV1ServiceMonitorList } from './comCoreosMonitoringV1ServiceMonitorList';
-import { DevKudoV1beta1InstanceList } from './devKudoV1beta1InstanceList';
-import { DevKudoV1beta1OperatorList } from './devKudoV1beta1OperatorList';
-import { DevKudoV1beta1OperatorVersionList } from './devKudoV1beta1OperatorVersionList';
 import { ExtensionsV1beta1HTTPIngressPath } from './extensionsV1beta1HTTPIngressPath';
 import { ExtensionsV1beta1HTTPIngressRuleValue } from './extensionsV1beta1HTTPIngressRuleValue';
 import { ExtensionsV1beta1Ingress } from './extensionsV1beta1Ingress';
@@ -710,6 +742,7 @@ import { IoKubefedMulticlusterdnsV1alpha1IngressDNSRecordList } from './ioKubefe
 import { IoKubefedMulticlusterdnsV1alpha1ServiceDNSRecordList } from './ioKubefedMulticlusterdnsV1alpha1ServiceDNSRecordList';
 import { IoKubefedSchedulingV1alpha1ReplicaSchedulingPreferenceList } from './ioKubefedSchedulingV1alpha1ReplicaSchedulingPreferenceList';
 import { IoKubefedTypesV1beta1FederatedAddonList } from './ioKubefedTypesV1beta1FederatedAddonList';
+import { IoKubefedTypesV1beta1FederatedAddonsDeploymentList } from './ioKubefedTypesV1beta1FederatedAddonsDeploymentList';
 import { IoKubefedTypesV1beta1FederatedClusterAddonList } from './ioKubefedTypesV1beta1FederatedClusterAddonList';
 import { IoKubefedTypesV1beta1FederatedClusterRoleBindingList } from './ioKubefedTypesV1beta1FederatedClusterRoleBindingList';
 import { IoKubefedTypesV1beta1FederatedClusterRoleList } from './ioKubefedTypesV1beta1FederatedClusterRoleList';
@@ -725,8 +758,23 @@ import { IoKubefedTypesV1beta1FederatedRoleList } from './ioKubefedTypesV1beta1F
 import { IoKubefedTypesV1beta1FederatedSecretList } from './ioKubefedTypesV1beta1FederatedSecretList';
 import { IoKubefedTypesV1beta1FederatedServiceAccountList } from './ioKubefedTypesV1beta1FederatedServiceAccountList';
 import { IoKubefedTypesV1beta1FederatedServiceList } from './ioKubefedTypesV1beta1FederatedServiceList';
+import { IoMesosphereDexV1alpha1Client } from './ioMesosphereDexV1alpha1Client';
 import { IoMesosphereDexV1alpha1ClientList } from './ioMesosphereDexV1alpha1ClientList';
+import { IoMesosphereDexV1alpha1ClientSpec } from './ioMesosphereDexV1alpha1ClientSpec';
+import { IoMesosphereDexV1alpha1ClientSpecClientSecretRef } from './ioMesosphereDexV1alpha1ClientSpecClientSecretRef';
+import { IoMesosphereDexV1alpha1Connector } from './ioMesosphereDexV1alpha1Connector';
 import { IoMesosphereDexV1alpha1ConnectorList } from './ioMesosphereDexV1alpha1ConnectorList';
+import { IoMesosphereDexV1alpha1ConnectorSpec } from './ioMesosphereDexV1alpha1ConnectorSpec';
+import { IoMesosphereDexV1alpha1ConnectorSpecGithub } from './ioMesosphereDexV1alpha1ConnectorSpecGithub';
+import { IoMesosphereDexV1alpha1ConnectorSpecGithubClientSecretRef } from './ioMesosphereDexV1alpha1ConnectorSpecGithubClientSecretRef';
+import { IoMesosphereDexV1alpha1ConnectorSpecGithubOrgs } from './ioMesosphereDexV1alpha1ConnectorSpecGithubOrgs';
+import { IoMesosphereDexV1alpha1ConnectorSpecGithubRootCASecretRef } from './ioMesosphereDexV1alpha1ConnectorSpecGithubRootCASecretRef';
+import { IoMesosphereDexV1alpha1ConnectorSpecLdap } from './ioMesosphereDexV1alpha1ConnectorSpecLdap';
+import { IoMesosphereDexV1alpha1ConnectorSpecLdapBindSecretRef } from './ioMesosphereDexV1alpha1ConnectorSpecLdapBindSecretRef';
+import { IoMesosphereDexV1alpha1ConnectorSpecLdapGroupSearch } from './ioMesosphereDexV1alpha1ConnectorSpecLdapGroupSearch';
+import { IoMesosphereDexV1alpha1ConnectorSpecLdapUserSearch } from './ioMesosphereDexV1alpha1ConnectorSpecLdapUserSearch';
+import { IoMesosphereDexV1alpha1ConnectorSpecOidc } from './ioMesosphereDexV1alpha1ConnectorSpecOidc';
+import { IoMesosphereDexV1alpha1ConnectorSpecOidcClientSecretRef } from './ioMesosphereDexV1alpha1ConnectorSpecOidcClientSecretRef';
 import { IoMesosphereKommanderV1beta1CloudProviderAccount } from './ioMesosphereKommanderV1beta1CloudProviderAccount';
 import { IoMesosphereKommanderV1beta1CloudProviderAccountList } from './ioMesosphereKommanderV1beta1CloudProviderAccountList';
 import { IoMesosphereKommanderV1beta1CloudProviderAccountSpec } from './ioMesosphereKommanderV1beta1CloudProviderAccountSpec';
@@ -749,6 +797,7 @@ import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntime } 
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntimeContainerd } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntimeContainerd';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntimeContainerdConfigData } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntimeContainerdConfigData';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterGpu } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterGpu';
+import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterHelmRepository } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterHelmRepository';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterImageRegistries } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterImageRegistries';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetes } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetes';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesAdmissionPlugins } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesAdmissionPlugins';
@@ -756,11 +805,12 @@ import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesCloudProv
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlane } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlane';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlaneCertificate } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlaneCertificate';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlaneKeepalived } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlaneKeepalived';
+import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesKubelet } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesKubelet';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesNetworking } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesNetworking';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesPreflightChecks } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesPreflightChecks';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterLabels } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterLabels';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterNodePools } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterNodePools';
-import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterPackageRepository } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterPackageRepository';
+import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterOsPackages } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterOsPackages';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterTaints } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterTaints';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisioner } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecProvisioner';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAws } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAws';
@@ -785,14 +835,6 @@ import { IoMesosphereKommanderV1beta1LicenseList } from './ioMesosphereKommander
 import { IoMesosphereKommanderV1beta1LicenseSpec } from './ioMesosphereKommanderV1beta1LicenseSpec';
 import { IoMesosphereKommanderV1beta1LicenseSpecLicenseRef } from './ioMesosphereKommanderV1beta1LicenseSpecLicenseRef';
 import { IoMesosphereKommanderV1beta1LicenseStatus } from './ioMesosphereKommanderV1beta1LicenseStatus';
-import { IoMesosphereKommanderV1beta1Project } from './ioMesosphereKommanderV1beta1Project';
-import { IoMesosphereKommanderV1beta1ProjectList } from './ioMesosphereKommanderV1beta1ProjectList';
-import { IoMesosphereKommanderV1beta1ProjectSpec } from './ioMesosphereKommanderV1beta1ProjectSpec';
-import { IoMesosphereKommanderV1beta1ProjectSpecPlacement } from './ioMesosphereKommanderV1beta1ProjectSpecPlacement';
-import { IoMesosphereKommanderV1beta1ProjectSpecPlacementClusterSelector } from './ioMesosphereKommanderV1beta1ProjectSpecPlacementClusterSelector';
-import { IoMesosphereKommanderV1beta1ProjectSpecPlacementClusterSelectorMatchExpressions } from './ioMesosphereKommanderV1beta1ProjectSpecPlacementClusterSelectorMatchExpressions';
-import { IoMesosphereKommanderV1beta1ProjectSpecPlacementClusters } from './ioMesosphereKommanderV1beta1ProjectSpecPlacementClusters';
-import { IoMesosphereKommanderV1beta1ProjectStatus } from './ioMesosphereKommanderV1beta1ProjectStatus';
 import { IoMesosphereKommanderV1beta1VirtualGroup } from './ioMesosphereKommanderV1beta1VirtualGroup';
 import { IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBinding } from './ioMesosphereKommanderV1beta1VirtualGroupClusterRoleBinding';
 import { IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingList } from './ioMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingList';
@@ -801,10 +843,38 @@ import { IoMesosphereKommanderV1beta1VirtualGroupList } from './ioMesosphereKomm
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBinding } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBinding';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingList } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingList';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpec } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpec';
+import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement';
+import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusterSelector } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusterSelector';
+import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusterSelectorMatchExpressions } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusterSelectorMatchExpressions';
+import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusters } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusters';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef';
 import { IoMesosphereKommanderV1beta1VirtualGroupSpec } from './ioMesosphereKommanderV1beta1VirtualGroupSpec';
 import { IoMesosphereKommanderV1beta1VirtualGroupSpecSubjects } from './ioMesosphereKommanderV1beta1VirtualGroupSpecSubjects';
+import { IoMesosphereKommanderWorkspacesV1alpha1Project } from './ioMesosphereKommanderWorkspacesV1alpha1Project';
+import { IoMesosphereKommanderWorkspacesV1alpha1ProjectList } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectList';
+import { IoMesosphereKommanderWorkspacesV1alpha1ProjectRole } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRole';
+import { IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleList } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRoleList';
+import { IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpec } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpec';
+import { IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpecRules } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpecRules';
+import { IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleStatus } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRoleStatus';
+import { IoMesosphereKommanderWorkspacesV1alpha1ProjectSpec } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectSpec';
+import { IoMesosphereKommanderWorkspacesV1alpha1ProjectStatus } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectStatus';
+import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBinding } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBinding';
+import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingList } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingList';
+import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingSpec } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingSpec';
+import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingStatus } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingStatus';
+import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBinding } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBinding';
+import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingList } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingList';
+import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingSpec } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingSpec';
+import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingStatus } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingStatus';
+import { IoMesosphereKommanderWorkspacesV1alpha1Workspace } from './ioMesosphereKommanderWorkspacesV1alpha1Workspace';
+import { IoMesosphereKommanderWorkspacesV1alpha1WorkspaceList } from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceList';
+import { IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRole } from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceRole';
+import { IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleList } from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleList';
+import { IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleStatus } from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleStatus';
+import { IoMesosphereKommanderWorkspacesV1alpha1WorkspaceSpec } from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceSpec';
+import { IoMesosphereKommanderWorkspacesV1alpha1WorkspaceStatus } from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceStatus';
 import { IoMesosphereKubeaddonsV1beta1AddonList } from './ioMesosphereKubeaddonsV1beta1AddonList';
 import { IoMesosphereKubeaddonsV1beta1AddonRepositoryList } from './ioMesosphereKubeaddonsV1beta1AddonRepositoryList';
 import { IoMesosphereKubeaddonsV1beta1ClusterAddonList } from './ioMesosphereKubeaddonsV1beta1ClusterAddonList';
@@ -1355,9 +1425,6 @@ let typeMap: { [index: string]: any } = {
     ComCoreosMonitoringV1PrometheusList: ComCoreosMonitoringV1PrometheusList,
     ComCoreosMonitoringV1PrometheusRuleList: ComCoreosMonitoringV1PrometheusRuleList,
     ComCoreosMonitoringV1ServiceMonitorList: ComCoreosMonitoringV1ServiceMonitorList,
-    DevKudoV1beta1InstanceList: DevKudoV1beta1InstanceList,
-    DevKudoV1beta1OperatorList: DevKudoV1beta1OperatorList,
-    DevKudoV1beta1OperatorVersionList: DevKudoV1beta1OperatorVersionList,
     ExtensionsV1beta1HTTPIngressPath: ExtensionsV1beta1HTTPIngressPath,
     ExtensionsV1beta1HTTPIngressRuleValue: ExtensionsV1beta1HTTPIngressRuleValue,
     ExtensionsV1beta1Ingress: ExtensionsV1beta1Ingress,
@@ -1379,6 +1446,7 @@ let typeMap: { [index: string]: any } = {
     IoKubefedMulticlusterdnsV1alpha1ServiceDNSRecordList: IoKubefedMulticlusterdnsV1alpha1ServiceDNSRecordList,
     IoKubefedSchedulingV1alpha1ReplicaSchedulingPreferenceList: IoKubefedSchedulingV1alpha1ReplicaSchedulingPreferenceList,
     IoKubefedTypesV1beta1FederatedAddonList: IoKubefedTypesV1beta1FederatedAddonList,
+    IoKubefedTypesV1beta1FederatedAddonsDeploymentList: IoKubefedTypesV1beta1FederatedAddonsDeploymentList,
     IoKubefedTypesV1beta1FederatedClusterAddonList: IoKubefedTypesV1beta1FederatedClusterAddonList,
     IoKubefedTypesV1beta1FederatedClusterRoleBindingList: IoKubefedTypesV1beta1FederatedClusterRoleBindingList,
     IoKubefedTypesV1beta1FederatedClusterRoleList: IoKubefedTypesV1beta1FederatedClusterRoleList,
@@ -1394,8 +1462,23 @@ let typeMap: { [index: string]: any } = {
     IoKubefedTypesV1beta1FederatedSecretList: IoKubefedTypesV1beta1FederatedSecretList,
     IoKubefedTypesV1beta1FederatedServiceAccountList: IoKubefedTypesV1beta1FederatedServiceAccountList,
     IoKubefedTypesV1beta1FederatedServiceList: IoKubefedTypesV1beta1FederatedServiceList,
+    IoMesosphereDexV1alpha1Client: IoMesosphereDexV1alpha1Client,
     IoMesosphereDexV1alpha1ClientList: IoMesosphereDexV1alpha1ClientList,
+    IoMesosphereDexV1alpha1ClientSpec: IoMesosphereDexV1alpha1ClientSpec,
+    IoMesosphereDexV1alpha1ClientSpecClientSecretRef: IoMesosphereDexV1alpha1ClientSpecClientSecretRef,
+    IoMesosphereDexV1alpha1Connector: IoMesosphereDexV1alpha1Connector,
     IoMesosphereDexV1alpha1ConnectorList: IoMesosphereDexV1alpha1ConnectorList,
+    IoMesosphereDexV1alpha1ConnectorSpec: IoMesosphereDexV1alpha1ConnectorSpec,
+    IoMesosphereDexV1alpha1ConnectorSpecGithub: IoMesosphereDexV1alpha1ConnectorSpecGithub,
+    IoMesosphereDexV1alpha1ConnectorSpecGithubClientSecretRef: IoMesosphereDexV1alpha1ConnectorSpecGithubClientSecretRef,
+    IoMesosphereDexV1alpha1ConnectorSpecGithubOrgs: IoMesosphereDexV1alpha1ConnectorSpecGithubOrgs,
+    IoMesosphereDexV1alpha1ConnectorSpecGithubRootCASecretRef: IoMesosphereDexV1alpha1ConnectorSpecGithubRootCASecretRef,
+    IoMesosphereDexV1alpha1ConnectorSpecLdap: IoMesosphereDexV1alpha1ConnectorSpecLdap,
+    IoMesosphereDexV1alpha1ConnectorSpecLdapBindSecretRef: IoMesosphereDexV1alpha1ConnectorSpecLdapBindSecretRef,
+    IoMesosphereDexV1alpha1ConnectorSpecLdapGroupSearch: IoMesosphereDexV1alpha1ConnectorSpecLdapGroupSearch,
+    IoMesosphereDexV1alpha1ConnectorSpecLdapUserSearch: IoMesosphereDexV1alpha1ConnectorSpecLdapUserSearch,
+    IoMesosphereDexV1alpha1ConnectorSpecOidc: IoMesosphereDexV1alpha1ConnectorSpecOidc,
+    IoMesosphereDexV1alpha1ConnectorSpecOidcClientSecretRef: IoMesosphereDexV1alpha1ConnectorSpecOidcClientSecretRef,
     IoMesosphereKommanderV1beta1CloudProviderAccount: IoMesosphereKommanderV1beta1CloudProviderAccount,
     IoMesosphereKommanderV1beta1CloudProviderAccountList: IoMesosphereKommanderV1beta1CloudProviderAccountList,
     IoMesosphereKommanderV1beta1CloudProviderAccountSpec: IoMesosphereKommanderV1beta1CloudProviderAccountSpec,
@@ -1418,6 +1501,7 @@ let typeMap: { [index: string]: any } = {
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntimeContainerd: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntimeContainerd,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntimeContainerdConfigData: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterContainerRuntimeContainerdConfigData,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterGpu: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterGpu,
+    IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterHelmRepository: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterHelmRepository,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterImageRegistries: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterImageRegistries,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetes: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetes,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesAdmissionPlugins: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesAdmissionPlugins,
@@ -1425,11 +1509,12 @@ let typeMap: { [index: string]: any } = {
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlane: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlane,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlaneCertificate: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlaneCertificate,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlaneKeepalived: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlaneKeepalived,
+    IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesKubelet: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesKubelet,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesNetworking: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesNetworking,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesPreflightChecks: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesPreflightChecks,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterLabels: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterLabels,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterNodePools: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterNodePools,
-    IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterPackageRepository: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterPackageRepository,
+    IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterOsPackages: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterOsPackages,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterTaints: IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterTaints,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisioner: IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisioner,
     IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAws: IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAws,
@@ -1454,14 +1539,6 @@ let typeMap: { [index: string]: any } = {
     IoMesosphereKommanderV1beta1LicenseSpec: IoMesosphereKommanderV1beta1LicenseSpec,
     IoMesosphereKommanderV1beta1LicenseSpecLicenseRef: IoMesosphereKommanderV1beta1LicenseSpecLicenseRef,
     IoMesosphereKommanderV1beta1LicenseStatus: IoMesosphereKommanderV1beta1LicenseStatus,
-    IoMesosphereKommanderV1beta1Project: IoMesosphereKommanderV1beta1Project,
-    IoMesosphereKommanderV1beta1ProjectList: IoMesosphereKommanderV1beta1ProjectList,
-    IoMesosphereKommanderV1beta1ProjectSpec: IoMesosphereKommanderV1beta1ProjectSpec,
-    IoMesosphereKommanderV1beta1ProjectSpecPlacement: IoMesosphereKommanderV1beta1ProjectSpecPlacement,
-    IoMesosphereKommanderV1beta1ProjectSpecPlacementClusterSelector: IoMesosphereKommanderV1beta1ProjectSpecPlacementClusterSelector,
-    IoMesosphereKommanderV1beta1ProjectSpecPlacementClusterSelectorMatchExpressions: IoMesosphereKommanderV1beta1ProjectSpecPlacementClusterSelectorMatchExpressions,
-    IoMesosphereKommanderV1beta1ProjectSpecPlacementClusters: IoMesosphereKommanderV1beta1ProjectSpecPlacementClusters,
-    IoMesosphereKommanderV1beta1ProjectStatus: IoMesosphereKommanderV1beta1ProjectStatus,
     IoMesosphereKommanderV1beta1VirtualGroup: IoMesosphereKommanderV1beta1VirtualGroup,
     IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBinding: IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBinding,
     IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingList: IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingList,
@@ -1470,10 +1547,38 @@ let typeMap: { [index: string]: any } = {
     IoMesosphereKommanderV1beta1VirtualGroupRoleBinding: IoMesosphereKommanderV1beta1VirtualGroupRoleBinding,
     IoMesosphereKommanderV1beta1VirtualGroupRoleBindingList: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingList,
     IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpec: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpec,
+    IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement,
+    IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusterSelector: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusterSelector,
+    IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusterSelectorMatchExpressions: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusterSelectorMatchExpressions,
+    IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusters: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacementClusters,
     IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef,
     IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef,
     IoMesosphereKommanderV1beta1VirtualGroupSpec: IoMesosphereKommanderV1beta1VirtualGroupSpec,
     IoMesosphereKommanderV1beta1VirtualGroupSpecSubjects: IoMesosphereKommanderV1beta1VirtualGroupSpecSubjects,
+    IoMesosphereKommanderWorkspacesV1alpha1Project: IoMesosphereKommanderWorkspacesV1alpha1Project,
+    IoMesosphereKommanderWorkspacesV1alpha1ProjectList: IoMesosphereKommanderWorkspacesV1alpha1ProjectList,
+    IoMesosphereKommanderWorkspacesV1alpha1ProjectRole: IoMesosphereKommanderWorkspacesV1alpha1ProjectRole,
+    IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleList: IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleList,
+    IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpec: IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpec,
+    IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpecRules: IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpecRules,
+    IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleStatus: IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleStatus,
+    IoMesosphereKommanderWorkspacesV1alpha1ProjectSpec: IoMesosphereKommanderWorkspacesV1alpha1ProjectSpec,
+    IoMesosphereKommanderWorkspacesV1alpha1ProjectStatus: IoMesosphereKommanderWorkspacesV1alpha1ProjectStatus,
+    IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBinding: IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBinding,
+    IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingList: IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingList,
+    IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingSpec: IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingSpec,
+    IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingStatus: IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingStatus,
+    IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBinding: IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBinding,
+    IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingList: IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingList,
+    IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingSpec: IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingSpec,
+    IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingStatus: IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingStatus,
+    IoMesosphereKommanderWorkspacesV1alpha1Workspace: IoMesosphereKommanderWorkspacesV1alpha1Workspace,
+    IoMesosphereKommanderWorkspacesV1alpha1WorkspaceList: IoMesosphereKommanderWorkspacesV1alpha1WorkspaceList,
+    IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRole: IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRole,
+    IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleList: IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleList,
+    IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleStatus: IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleStatus,
+    IoMesosphereKommanderWorkspacesV1alpha1WorkspaceSpec: IoMesosphereKommanderWorkspacesV1alpha1WorkspaceSpec,
+    IoMesosphereKommanderWorkspacesV1alpha1WorkspaceStatus: IoMesosphereKommanderWorkspacesV1alpha1WorkspaceStatus,
     IoMesosphereKubeaddonsV1beta1AddonList: IoMesosphereKubeaddonsV1beta1AddonList,
     IoMesosphereKubeaddonsV1beta1AddonRepositoryList: IoMesosphereKubeaddonsV1beta1AddonRepositoryList,
     IoMesosphereKubeaddonsV1beta1ClusterAddonList: IoMesosphereKubeaddonsV1beta1ClusterAddonList,
