@@ -11,12 +11,14 @@
  */
 
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement';
+import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef';
 
 /**
  * ProjectSpec describes the attributes on a Project
  */
 export class IoMesosphereKommanderWorkspacesV1alpha1ProjectSpec {
     'placement'?: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement;
+    'workspaceRef'?: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef;
 
     static discriminator: string | undefined = undefined;
 
@@ -25,6 +27,11 @@ export class IoMesosphereKommanderWorkspacesV1alpha1ProjectSpec {
             name: 'placement',
             baseName: 'placement',
             type: 'IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement',
+        },
+        {
+            name: 'workspaceRef',
+            baseName: 'workspaceRef',
+            type: 'IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef',
         },
     ];
 
