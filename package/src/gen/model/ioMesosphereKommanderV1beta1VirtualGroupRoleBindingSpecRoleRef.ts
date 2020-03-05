@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * TODO coordinate with frontend team to change this to a rbacv1.RoleRef type
  */

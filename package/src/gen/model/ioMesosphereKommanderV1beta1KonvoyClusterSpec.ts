@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecCluster } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecCluster';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisioner } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecProvisioner';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef';

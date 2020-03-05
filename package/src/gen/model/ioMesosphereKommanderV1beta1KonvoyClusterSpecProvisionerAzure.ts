@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAzureAvailabilitySet } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAzureAvailabilitySet';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAzureLoadbalancer } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAzureLoadbalancer';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAzureVnet } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerAzureVnet';

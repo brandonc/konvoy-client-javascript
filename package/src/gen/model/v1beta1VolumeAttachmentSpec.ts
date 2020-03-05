@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1beta1VolumeAttachmentSource } from './v1beta1VolumeAttachmentSource';
 
 /**

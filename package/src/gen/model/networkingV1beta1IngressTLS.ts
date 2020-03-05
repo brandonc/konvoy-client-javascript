@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * IngressTLS describes the transport layer security associated with an Ingress.
  */

@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * ResourceAttributes includes the authorization attributes available for resource requests to the Authorizer interface
  */

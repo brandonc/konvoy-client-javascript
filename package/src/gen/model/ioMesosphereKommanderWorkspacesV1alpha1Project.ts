@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderWorkspacesV1alpha1ProjectSpec } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectSpec';
 import { IoMesosphereKommanderWorkspacesV1alpha1ProjectStatus } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectStatus';
 import { V1ObjectMeta } from './v1ObjectMeta';

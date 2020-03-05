@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ObjectMeta } from './v1ObjectMeta';
 import { V1beta1VolumeAttachmentSpec } from './v1beta1VolumeAttachmentSpec';
 import { V1beta1VolumeAttachmentStatus } from './v1beta1VolumeAttachmentStatus';

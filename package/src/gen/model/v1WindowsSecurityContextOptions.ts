@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * WindowsSecurityContextOptions contain Windows-specific options and credentials.
  */

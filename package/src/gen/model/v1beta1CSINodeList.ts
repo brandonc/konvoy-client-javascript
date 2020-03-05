@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ListMeta } from './v1ListMeta';
 import { V1beta1CSINode } from './v1beta1CSINode';
 

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ConfigMapKeySelector } from './v1ConfigMapKeySelector';
 import { V1ObjectFieldSelector } from './v1ObjectFieldSelector';
 import { V1ResourceFieldSelector } from './v1ResourceFieldSelector';

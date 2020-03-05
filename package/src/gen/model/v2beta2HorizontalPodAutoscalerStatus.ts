@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V2beta2HorizontalPodAutoscalerCondition } from './v2beta2HorizontalPodAutoscalerCondition';
 import { V2beta2MetricStatus } from './v2beta2MetricStatus';
 

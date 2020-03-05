@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1KommanderClusterStatusDextfaclientRef } from './ioMesosphereKommanderV1beta1KommanderClusterStatusDextfaclientRef';
 import { IoMesosphereKommanderV1beta1KommanderClusterStatusKubefedclusterRef } from './ioMesosphereKommanderV1beta1KommanderClusterStatusKubefedclusterRef';
 
@@ -17,6 +18,10 @@ import { IoMesosphereKommanderV1beta1KommanderClusterStatusKubefedclusterRef } f
  * KommanderClusterStatus defines the observed state of Cluster
  */
 export class IoMesosphereKommanderV1beta1KommanderClusterStatus {
+    /**
+     * KubernetesClusterID is the stable cluster ID of the Kubernetes cluster that this Kommander cluster represents.
+     */
+    'clusterId'?: string;
     'dextfaclientRef'?: IoMesosphereKommanderV1beta1KommanderClusterStatusDextfaclientRef;
     'kubefedclusterRef'?: IoMesosphereKommanderV1beta1KommanderClusterStatusKubefedclusterRef;
     /**
@@ -27,10 +32,19 @@ export class IoMesosphereKommanderV1beta1KommanderClusterStatus {
      * ServiceEndpoints will be the addresses assigned to the Kubernetes exposed services
      */
     'serviceEndpoints'?: { [key: string]: string };
+    /**
+     * ClusterType represents the type of the cluster. E.g. Konvoy, EKS, GKE, etc.
+     */
+    'type'?: string;
 
     static discriminator: string | undefined = undefined;
 
     static attributeTypeMap: Array<{ name: string; baseName: string; type: string }> = [
+        {
+            name: 'clusterId',
+            baseName: 'clusterId',
+            type: 'string',
+        },
         {
             name: 'dextfaclientRef',
             baseName: 'dextfaclientRef',
@@ -50,6 +64,11 @@ export class IoMesosphereKommanderV1beta1KommanderClusterStatus {
             name: 'serviceEndpoints',
             baseName: 'serviceEndpoints',
             type: '{ [key: string]: string; }',
+        },
+        {
+            name: 'type',
+            baseName: 'type',
+            type: 'string',
         },
     ];
 

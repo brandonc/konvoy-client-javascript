@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * A secret reference to the root CA that will be used for TLS validation. The secret should have type \"Opaque\" and contain the key \"tls.crt\". If not specified, the root CA of the host will be used.
  */

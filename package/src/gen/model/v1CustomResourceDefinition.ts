@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1CustomResourceDefinitionSpec } from './v1CustomResourceDefinitionSpec';
 import { V1CustomResourceDefinitionStatus } from './v1CustomResourceDefinitionStatus';
 import { V1ObjectMeta } from './v1ObjectMeta';

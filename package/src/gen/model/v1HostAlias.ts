@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * HostAlias holds the mapping between IP and hostnames that will be injected as an entry in the pod\'s hosts file.
  */

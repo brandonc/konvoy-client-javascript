@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * DexTFAClientRef holds a reference to a DexClient provisioned for Traefik Forward Auth running on managed cluster.
  */
@@ -23,7 +25,7 @@ export class IoMesosphereKommanderV1beta1KommanderClusterStatusDextfaclientRef {
      */
     'fieldPath'?: string;
     /**
-     * Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+     * Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
      */
     'kind'?: string;
     /**
@@ -35,7 +37,7 @@ export class IoMesosphereKommanderV1beta1KommanderClusterStatusDextfaclientRef {
      */
     'namespace'?: string;
     /**
-     * Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
+     * Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency
      */
     'resourceVersion'?: string;
     /**

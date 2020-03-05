@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { ExtensionsV1beta1IngressBackend } from './extensionsV1beta1IngressBackend';
 import { ExtensionsV1beta1IngressRule } from './extensionsV1beta1IngressRule';
 import { ExtensionsV1beta1IngressTLS } from './extensionsV1beta1IngressTLS';

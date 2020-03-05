@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { NetworkingV1beta1IngressBackend } from './networkingV1beta1IngressBackend';
 import { NetworkingV1beta1IngressRule } from './networkingV1beta1IngressRule';
 import { NetworkingV1beta1IngressTLS } from './networkingV1beta1IngressTLS';

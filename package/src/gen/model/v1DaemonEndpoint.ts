@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * DaemonEndpoint contains information about a single Daemon endpoint.
  */

@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * CloudProvider describes the options passed to Kubernets cloud-provider options
  */

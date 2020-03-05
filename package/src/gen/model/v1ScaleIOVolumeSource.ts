@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1LocalObjectReference } from './v1LocalObjectReference';
 
 /**

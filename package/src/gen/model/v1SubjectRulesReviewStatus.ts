@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1NonResourceRule } from './v1NonResourceRule';
 import { V1ResourceRule } from './v1ResourceRule';
 

@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * SecretReference represents a Secret Reference. It has enough information to retrieve secret in any namespace
  */

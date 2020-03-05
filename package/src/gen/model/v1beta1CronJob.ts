@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ObjectMeta } from './v1ObjectMeta';
 import { V1beta1CronJobSpec } from './v1beta1CronJobSpec';
 import { V1beta1CronJobStatus } from './v1beta1CronJobStatus';

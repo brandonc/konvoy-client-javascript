@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 export class IoMesosphereDexV1alpha1ConnectorSpecGithubOrgs {
     /**
      * Organization name in github (not slug, full name). Only users in this github organization can authenticate.

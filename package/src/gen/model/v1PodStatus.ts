@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ContainerStatus } from './v1ContainerStatus';
 import { V1PodCondition } from './v1PodCondition';
 import { V1PodIP } from './v1PodIP';

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V2beta2CrossVersionObjectReference } from './v2beta2CrossVersionObjectReference';
 import { V2beta2MetricIdentifier } from './v2beta2MetricIdentifier';
 import { V2beta2MetricValueStatus } from './v2beta2MetricValueStatus';

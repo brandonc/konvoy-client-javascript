@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * Preconditions must be fulfilled before an operation (update, delete, etc.) is carried out.
  */

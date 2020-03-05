@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1NamespaceSpec } from './v1NamespaceSpec';
 import { V1NamespaceStatus } from './v1NamespaceStatus';
 import { V1ObjectMeta } from './v1ObjectMeta';

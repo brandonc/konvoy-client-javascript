@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ObjectMeta } from './v1ObjectMeta';
 import { V1beta1Overhead } from './v1beta1Overhead';
 import { V1beta1Scheduling } from './v1beta1Scheduling';

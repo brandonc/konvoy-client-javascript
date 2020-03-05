@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * A secret reference to the password of the application service account to authenticate with the LDAP server. The connector uses the specified service account search for users and groups. Not required if the LDAP server provides access for anonymous auth. The secret should contain the key `password` like the following: ------- apiVersion: v1 kind: Secret metadata: name: ldap-bind-secret type: Opaque data:   password: ... -------
  */

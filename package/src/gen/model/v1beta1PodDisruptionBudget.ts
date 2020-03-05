@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ObjectMeta } from './v1ObjectMeta';
 import { V1beta1PodDisruptionBudgetSpec } from './v1beta1PodDisruptionBudgetSpec';
 import { V1beta1PodDisruptionBudgetStatus } from './v1beta1PodDisruptionBudgetStatus';

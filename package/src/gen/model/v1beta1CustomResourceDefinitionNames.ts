@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * CustomResourceDefinitionNames indicates the names to serve this CustomResourceDefinition
  */

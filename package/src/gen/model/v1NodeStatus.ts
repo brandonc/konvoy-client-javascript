@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1AttachedVolume } from './v1AttachedVolume';
 import { V1ContainerImage } from './v1ContainerImage';
 import { V1NodeAddress } from './v1NodeAddress';

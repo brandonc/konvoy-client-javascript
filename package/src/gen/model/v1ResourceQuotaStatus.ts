@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * ResourceQuotaStatus defines the enforced hard limits and observed use.
  */

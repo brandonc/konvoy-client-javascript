@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { ExtensionsV1beta1Ingress } from './extensionsV1beta1Ingress';
 import { V1ListMeta } from './v1ListMeta';
 

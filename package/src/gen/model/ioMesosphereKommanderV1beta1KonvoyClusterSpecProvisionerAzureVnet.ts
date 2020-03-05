@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * VNET contains the virtual network information required if using an existing virtual network
  */

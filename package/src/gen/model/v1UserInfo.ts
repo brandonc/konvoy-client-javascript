@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * UserInfo holds the information about the user needed to implement the user.Info interface.
  */

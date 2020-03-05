@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * Local represents directly-attached storage with node affinity (Beta feature)
  */

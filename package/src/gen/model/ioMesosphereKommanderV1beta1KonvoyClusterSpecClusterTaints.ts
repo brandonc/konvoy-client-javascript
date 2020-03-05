@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * NodeTaint represents a kubernetes taint to be applied to a node
  */

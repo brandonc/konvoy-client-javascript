@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereDexV1alpha1ConnectorSpecGithubRootCASecretRef } from './ioMesosphereDexV1alpha1ConnectorSpecGithubRootCASecretRef';
 import { IoMesosphereDexV1alpha1ConnectorSpecLdapBindSecretRef } from './ioMesosphereDexV1alpha1ConnectorSpecLdapBindSecretRef';
 import { IoMesosphereDexV1alpha1ConnectorSpecLdapGroupSearch } from './ioMesosphereDexV1alpha1ConnectorSpecLdapGroupSearch';

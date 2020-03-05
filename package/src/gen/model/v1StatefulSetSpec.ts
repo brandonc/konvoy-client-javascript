@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1LabelSelector } from './v1LabelSelector';
 import { V1PersistentVolumeClaim } from './v1PersistentVolumeClaim';
 import { V1PodTemplateSpec } from './v1PodTemplateSpec';

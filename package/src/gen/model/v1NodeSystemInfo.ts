@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * NodeSystemInfo is a set of ids/uuids to uniquely identify the node.
  */

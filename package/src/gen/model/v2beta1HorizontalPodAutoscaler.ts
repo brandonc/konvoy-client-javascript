@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ObjectMeta } from './v1ObjectMeta';
 import { V2beta1HorizontalPodAutoscalerSpec } from './v2beta1HorizontalPodAutoscalerSpec';
 import { V2beta1HorizontalPodAutoscalerStatus } from './v2beta1HorizontalPodAutoscalerStatus';

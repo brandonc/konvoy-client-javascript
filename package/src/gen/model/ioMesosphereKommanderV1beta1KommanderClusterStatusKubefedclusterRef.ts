@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * KubefedClusterRef holds a reference to a kubefedcluster in the kubefed system namespace.
  */

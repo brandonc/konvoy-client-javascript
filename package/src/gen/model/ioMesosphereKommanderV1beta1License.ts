@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1LicenseSpec } from './ioMesosphereKommanderV1beta1LicenseSpec';
 import { IoMesosphereKommanderV1beta1LicenseStatus } from './ioMesosphereKommanderV1beta1LicenseStatus';
 import { V1ObjectMeta } from './v1ObjectMeta';

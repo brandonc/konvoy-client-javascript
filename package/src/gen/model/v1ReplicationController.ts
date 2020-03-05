@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ObjectMeta } from './v1ObjectMeta';
 import { V1ReplicationControllerSpec } from './v1ReplicationControllerSpec';
 import { V1ReplicationControllerStatus } from './v1ReplicationControllerStatus';

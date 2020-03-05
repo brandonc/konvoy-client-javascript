@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * A topology selector requirement is a selector that matches given label. This is an alpha feature and may change in the future.
  */

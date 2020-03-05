@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 export class IoMesosphereKommanderWorkspacesV1alpha1WorkspaceSpec {
     'clusterLabels'?: { [key: string]: string };
 

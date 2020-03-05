@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerMachineAws } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerMachineAws';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerMachineAzure } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecProvisionerMachineAzure';
 

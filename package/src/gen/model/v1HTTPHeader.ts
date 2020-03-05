@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * HTTPHeader describes a custom header to be used in HTTP probes
  */

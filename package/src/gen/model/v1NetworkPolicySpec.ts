@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1LabelSelector } from './v1LabelSelector';
 import { V1NetworkPolicyEgressRule } from './v1NetworkPolicyEgressRule';
 import { V1NetworkPolicyIngressRule } from './v1NetworkPolicyIngressRule';

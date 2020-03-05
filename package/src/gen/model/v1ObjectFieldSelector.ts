@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * ObjectFieldSelector selects an APIVersioned field of an object.
  */

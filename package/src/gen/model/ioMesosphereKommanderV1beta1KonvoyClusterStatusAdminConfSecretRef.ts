@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * AdminConfSecretRef holds a reference to the admin conf secret when it is available.
  */

@@ -10,6 +10,9 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+import { IoMesosphereKommanderV1beta1LicenseStatusConditions } from './ioMesosphereKommanderV1beta1LicenseStatusConditions';
+
 /**
  * LicenseStatus defines the observed state of License
  */
@@ -18,6 +21,10 @@ export class IoMesosphereKommanderV1beta1LicenseStatus {
      * Maximum number of clusters that the license allows.
      */
     'clusterCapacity': number;
+    /**
+     * Conditions relevant to the license (currently used to track term breaches)
+     */
+    'conditions'?: Array<IoMesosphereKommanderV1beta1LicenseStatusConditions>;
     /**
      * The customer\'s ID. This is the customer name provided from Salesforce.
      */
@@ -50,6 +57,11 @@ export class IoMesosphereKommanderV1beta1LicenseStatus {
             name: 'clusterCapacity',
             baseName: 'clusterCapacity',
             type: 'number',
+        },
+        {
+            name: 'conditions',
+            baseName: 'conditions',
+            type: 'Array<IoMesosphereKommanderV1beta1LicenseStatusConditions>',
         },
         {
             name: 'customerId',

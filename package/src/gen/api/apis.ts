@@ -22,6 +22,8 @@ export * from './appsApi';
 import { AppsApi } from './appsApi';
 export * from './appsV1Api';
 import { AppsV1Api } from './appsV1Api';
+export * from './argoprojIoV1alpha1Api';
+import { ArgoprojIoV1alpha1Api } from './argoprojIoV1alpha1Api';
 export * from './authenticationApi';
 import { AuthenticationApi } from './authenticationApi';
 export * from './authenticationV1Api';
@@ -48,6 +50,8 @@ export * from './batchV1Api';
 import { BatchV1Api } from './batchV1Api';
 export * from './batchV1beta1Api';
 import { BatchV1beta1Api } from './batchV1beta1Api';
+export * from './cachingInternalKnativeDevV1alpha1Api';
+import { CachingInternalKnativeDevV1alpha1Api } from './cachingInternalKnativeDevV1alpha1Api';
 export * from './certificatesApi';
 import { CertificatesApi } from './certificatesApi';
 export * from './certificatesV1beta1Api';
@@ -74,10 +78,14 @@ export * from './crdProjectcalicoOrgV1Api';
 import { CrdProjectcalicoOrgV1Api } from './crdProjectcalicoOrgV1Api';
 export * from './customObjectsApi';
 import { CustomObjectsApi } from './customObjectsApi';
+export * from './dashboardTektonDevV1alpha1Api';
+import { DashboardTektonDevV1alpha1Api } from './dashboardTektonDevV1alpha1Api';
 export * from './dexCoreosComV1Api';
 import { DexCoreosComV1Api } from './dexCoreosComV1Api';
 export * from './dexMesosphereIoV1alpha1Api';
 import { DexMesosphereIoV1alpha1Api } from './dexMesosphereIoV1alpha1Api';
+export * from './dispatchD2iqIoV1alpha1Api';
+import { DispatchD2iqIoV1alpha1Api } from './dispatchD2iqIoV1alpha1Api';
 export * from './eventsApi';
 import { EventsApi } from './eventsApi';
 export * from './eventsV1beta1Api';
@@ -134,6 +142,8 @@ export * from './storageV1Api';
 import { StorageV1Api } from './storageV1Api';
 export * from './storageV1beta1Api';
 import { StorageV1beta1Api } from './storageV1beta1Api';
+export * from './tektonDevV1alpha1Api';
+import { TektonDevV1alpha1Api } from './tektonDevV1alpha1Api';
 export * from './templatesGatekeeperShV1alpha1Api';
 import { TemplatesGatekeeperShV1alpha1Api } from './templatesGatekeeperShV1alpha1Api';
 export * from './templatesGatekeeperShV1beta1Api';
@@ -179,6 +189,7 @@ export const APIS = [
     ApisApi,
     AppsApi,
     AppsV1Api,
+    ArgoprojIoV1alpha1Api,
     AuthenticationApi,
     AuthenticationV1Api,
     AuthenticationV1beta1Api,
@@ -192,6 +203,7 @@ export const APIS = [
     BatchApi,
     BatchV1Api,
     BatchV1beta1Api,
+    CachingInternalKnativeDevV1alpha1Api,
     CertificatesApi,
     CertificatesV1beta1Api,
     CertmanagerV1alpha1Api,
@@ -205,8 +217,10 @@ export const APIS = [
     CoreV1Api,
     CrdProjectcalicoOrgV1Api,
     CustomObjectsApi,
+    DashboardTektonDevV1alpha1Api,
     DexCoreosComV1Api,
     DexMesosphereIoV1alpha1Api,
+    DispatchD2iqIoV1alpha1Api,
     EventsApi,
     EventsV1beta1Api,
     ExtensionsApi,
@@ -235,6 +249,7 @@ export const APIS = [
     StorageApi,
     StorageV1Api,
     StorageV1beta1Api,
+    TektonDevV1alpha1Api,
     TemplatesGatekeeperShV1alpha1Api,
     TemplatesGatekeeperShV1beta1Api,
     TypesKubefedIoV1beta1Api,

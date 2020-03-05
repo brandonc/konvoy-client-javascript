@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * MetricTarget defines the target value, average value, or average utilization of a specific metric
  */

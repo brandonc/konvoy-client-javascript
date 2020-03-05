@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * CrossVersionObjectReference contains enough information to let you identify the referred resource.
  */

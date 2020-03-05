@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * VolumeMount describes a mounting of a Volume within a container.
  */

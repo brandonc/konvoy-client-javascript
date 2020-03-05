@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * ConfigData represents a file configuration for a Konvoy cluster component, and whether or not that should be merged into the corresponding data or completely replace it.
  */

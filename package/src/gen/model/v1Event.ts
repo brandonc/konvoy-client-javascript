@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1EventSeries } from './v1EventSeries';
 import { V1EventSource } from './v1EventSource';
 import { V1ObjectMeta } from './v1ObjectMeta';

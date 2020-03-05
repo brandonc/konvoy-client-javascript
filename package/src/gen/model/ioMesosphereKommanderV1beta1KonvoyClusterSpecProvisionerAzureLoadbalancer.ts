@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * LoadBalancer contains details for the kube-apiserver LoadBalancer
  */

@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * DaemonSetCondition describes the state of a DaemonSet at a certain point.
  */

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBinding } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBinding';
 import { IoVeleroV1VolumeSnapshotLocationListMetadata } from './ioVeleroV1VolumeSnapshotLocationListMetadata';
 

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1Affinity } from './v1Affinity';
 import { V1Container } from './v1Container';
 import { V1EphemeralContainer } from './v1EphemeralContainer';

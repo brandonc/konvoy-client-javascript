@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * PreflightChecks describes the set of preflight checks to be performed.
  */

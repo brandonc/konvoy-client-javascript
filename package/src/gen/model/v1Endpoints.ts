@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1EndpointSubset } from './v1EndpointSubset';
 import { V1ObjectMeta } from './v1ObjectMeta';
 

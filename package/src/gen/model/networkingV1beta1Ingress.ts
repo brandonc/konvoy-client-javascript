@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { NetworkingV1beta1IngressSpec } from './networkingV1beta1IngressSpec';
 import { NetworkingV1beta1IngressStatus } from './networkingV1beta1IngressStatus';
 import { V1ObjectMeta } from './v1ObjectMeta';

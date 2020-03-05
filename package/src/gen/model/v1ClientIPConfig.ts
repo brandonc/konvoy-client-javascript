@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * ClientIPConfig represents the configurations of Client IP based session affinity.
  */

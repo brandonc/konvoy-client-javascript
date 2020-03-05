@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * GroupVersion contains the \"group/version\" and \"version\" string of a version. It is made a struct to keep extensibility.
  */

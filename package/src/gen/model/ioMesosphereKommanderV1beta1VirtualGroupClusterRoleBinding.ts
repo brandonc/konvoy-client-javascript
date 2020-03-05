@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingSpec } from './ioMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingSpec';
 import { V1ObjectMeta } from './v1ObjectMeta';
 
@@ -26,7 +27,7 @@ export class IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBinding {
      */
     'kind'?: string;
     'metadata'?: V1ObjectMeta;
-    'spec'?: IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingSpec;
+    'spec': IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingSpec;
 
     static discriminator: string | undefined = undefined;
 

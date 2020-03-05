@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ObjectMeta } from './v1ObjectMeta';
 import { V1ResourceQuotaSpec } from './v1ResourceQuotaSpec';
 import { V1ResourceQuotaStatus } from './v1ResourceQuotaStatus';

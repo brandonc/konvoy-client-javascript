@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 export class V1beta1SelfSubjectRulesReviewSpec {
     /**
      * Namespace to evaluate rules for. Required.

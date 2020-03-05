@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereDexV1alpha1ConnectorSpecOidcClientSecretRef } from './ioMesosphereDexV1alpha1ConnectorSpecOidcClientSecretRef';
 
 export class IoMesosphereDexV1alpha1ConnectorSpecOidc {
@@ -26,6 +27,10 @@ export class IoMesosphereDexV1alpha1ConnectorSpecOidc {
      * Google supports whitelisting allowed domains when using G Suite (Google Apps). The following field can be set to a list of domains that can log in:
      */
     'hostedDomains'?: Array<string>;
+    /**
+     * Groups claims (like the rest of oidc claims through dex) only refresh when the id token is refreshed meaning the regular refresh flow doesn\'t update the groups claim. As such by default the oidc connector doesn\'t allow groups claims. If you are okay with having potentially stale group claims you can use this option to enable groups claims through the oidc connector on a per-connector basis.  This can be overridden with the below option
+     */
+    'insecureEnableGroups'?: boolean;
     /**
      * Some providers return claims without \"email_verified\", when they had no usage of emails verification in enrollment process or if they are acting as a proxy for another IDP (e.g., AWS Cognito with an upstream SAML IDP). This can be overridden with the below option.
      */
@@ -73,6 +78,11 @@ export class IoMesosphereDexV1alpha1ConnectorSpecOidc {
             name: 'hostedDomains',
             baseName: 'hostedDomains',
             type: 'Array<string>',
+        },
+        {
+            name: 'insecureEnableGroups',
+            baseName: 'insecureEnableGroups',
+            type: 'boolean',
         },
         {
             name: 'insecureSkipEmailVerified',

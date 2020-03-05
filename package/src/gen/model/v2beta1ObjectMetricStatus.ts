@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1LabelSelector } from './v1LabelSelector';
 import { V2beta1CrossVersionObjectReference } from './v2beta1CrossVersionObjectReference';
 

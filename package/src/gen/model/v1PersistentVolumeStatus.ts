@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * PersistentVolumeStatus is the current status of a persistent volume.
  */
