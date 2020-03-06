@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * APIResource specifies the name of a resource and whether it is namespaced.
  */

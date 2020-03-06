@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1GroupVersionForDiscovery } from './v1GroupVersionForDiscovery';
 import { V1ServerAddressByClientCIDR } from './v1ServerAddressByClientCIDR';
 

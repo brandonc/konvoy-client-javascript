@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V2beta2MetricValueStatus } from './v2beta2MetricValueStatus';
 
 /**

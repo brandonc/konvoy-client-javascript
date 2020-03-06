@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1MutatingWebhook } from './v1MutatingWebhook';
 import { V1ObjectMeta } from './v1ObjectMeta';
 

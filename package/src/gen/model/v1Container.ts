@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ContainerPort } from './v1ContainerPort';
 import { V1EnvFromSource } from './v1EnvFromSource';
 import { V1EnvVar } from './v1EnvVar';

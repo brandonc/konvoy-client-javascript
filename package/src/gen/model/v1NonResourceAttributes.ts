@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * NonResourceAttributes includes the authorization attributes available for non-resource requests to the Authorizer interface
  */

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1DeploymentStrategy } from './v1DeploymentStrategy';
 import { V1LabelSelector } from './v1LabelSelector';
 import { V1PodTemplateSpec } from './v1PodTemplateSpec';

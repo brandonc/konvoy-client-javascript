@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * Certificate contains information about an X.509 certificate
  */

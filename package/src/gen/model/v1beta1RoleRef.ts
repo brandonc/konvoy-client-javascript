@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * RoleRef contains information that points to the role being used
  */

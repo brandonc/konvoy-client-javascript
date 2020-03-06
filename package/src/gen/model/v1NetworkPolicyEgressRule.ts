@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1NetworkPolicyPeer } from './v1NetworkPolicyPeer';
 import { V1NetworkPolicyPort } from './v1NetworkPolicyPort';
 

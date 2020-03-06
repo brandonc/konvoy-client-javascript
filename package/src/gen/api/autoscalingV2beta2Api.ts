@@ -20,8 +20,8 @@ import { V1Status } from '../model/v1Status';
 import { V2beta2HorizontalPodAutoscaler } from '../model/v2beta2HorizontalPodAutoscaler';
 import { V2beta2HorizontalPodAutoscalerList } from '../model/v2beta2HorizontalPodAutoscalerList';
 
-import { ObjectSerializer, Authentication, VoidAuth } from '../model/models';
-import { HttpBasicAuth, ApiKeyAuth, OAuth } from '../model/models';
+import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models';
+import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models';
 
 import { HttpError, RequestFile } from './apis';
 
@@ -37,13 +37,15 @@ export enum AutoscalingV2beta2ApiApiKeys {
 
 export class AutoscalingV2beta2Api {
     protected _basePath = defaultBasePath;
-    protected defaultHeaders: any = {};
+    protected _defaultHeaders: any = {};
     protected _useQuerystring: boolean = false;
 
     protected authentications = {
         default: <Authentication>new VoidAuth(),
         BearerToken: new ApiKeyAuth('header', 'authorization'),
     };
+
+    protected interceptors: Interceptor[] = [];
 
     constructor(basePath?: string);
     constructor(basePathOrUsername: string, password?: string, basePath?: string) {
@@ -66,6 +68,14 @@ export class AutoscalingV2beta2Api {
         this._basePath = basePath;
     }
 
+    set defaultHeaders(defaultHeaders: any) {
+        this._defaultHeaders = defaultHeaders;
+    }
+
+    get defaultHeaders() {
+        return this._defaultHeaders;
+    }
+
     get basePath() {
         return this._basePath;
     }
@@ -76,6 +86,10 @@ export class AutoscalingV2beta2Api {
 
     public setApiKey(key: AutoscalingV2beta2ApiApiKeys, value: string) {
         (this.authentications as any)[AutoscalingV2beta2ApiApiKeys[key]].apiKey = value;
+    }
+
+    public addInterceptor(interceptor: Interceptor) {
+        this.interceptors.push(interceptor);
     }
 
     /**
@@ -101,7 +115,7 @@ export class AutoscalingV2beta2Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -152,14 +166,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -232,7 +253,7 @@ export class AutoscalingV2beta2Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -331,14 +352,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -390,7 +418,7 @@ export class AutoscalingV2beta2Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -458,14 +486,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -497,7 +532,7 @@ export class AutoscalingV2beta2Api {
     ): Promise<{ response: http.IncomingMessage; body: V1APIResourceList }> {
         const localVarPath = this.basePath + '/apis/autoscaling/v2beta2/';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -521,14 +556,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -584,7 +626,7 @@ export class AutoscalingV2beta2Api {
     ): Promise<{ response: http.IncomingMessage; body: V2beta2HorizontalPodAutoscalerList }> {
         const localVarPath = this.basePath + '/apis/autoscaling/v2beta2/horizontalpodautoscalers';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = [
             'application/json',
             'application/yaml',
@@ -656,14 +698,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -726,7 +775,7 @@ export class AutoscalingV2beta2Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = [
             'application/json',
             'application/yaml',
@@ -805,14 +854,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -868,7 +924,7 @@ export class AutoscalingV2beta2Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -930,14 +986,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -993,7 +1056,7 @@ export class AutoscalingV2beta2Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1055,14 +1118,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1114,7 +1184,7 @@ export class AutoscalingV2beta2Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1164,14 +1234,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1219,7 +1296,7 @@ export class AutoscalingV2beta2Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1261,14 +1338,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1322,7 +1406,7 @@ export class AutoscalingV2beta2Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1380,14 +1464,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1441,7 +1532,7 @@ export class AutoscalingV2beta2Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1499,14 +1590,21 @@ export class AutoscalingV2beta2Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;

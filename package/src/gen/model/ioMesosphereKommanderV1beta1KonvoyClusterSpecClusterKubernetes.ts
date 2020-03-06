@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesAdmissionPlugins } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesAdmissionPlugins';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesCloudProvider } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesCloudProvider';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlane } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesControlPlane';

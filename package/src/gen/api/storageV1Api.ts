@@ -22,8 +22,8 @@ import { V1StorageClassList } from '../model/v1StorageClassList';
 import { V1VolumeAttachment } from '../model/v1VolumeAttachment';
 import { V1VolumeAttachmentList } from '../model/v1VolumeAttachmentList';
 
-import { ObjectSerializer, Authentication, VoidAuth } from '../model/models';
-import { HttpBasicAuth, ApiKeyAuth, OAuth } from '../model/models';
+import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models';
+import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models';
 
 import { HttpError, RequestFile } from './apis';
 
@@ -39,13 +39,15 @@ export enum StorageV1ApiApiKeys {
 
 export class StorageV1Api {
     protected _basePath = defaultBasePath;
-    protected defaultHeaders: any = {};
+    protected _defaultHeaders: any = {};
     protected _useQuerystring: boolean = false;
 
     protected authentications = {
         default: <Authentication>new VoidAuth(),
         BearerToken: new ApiKeyAuth('header', 'authorization'),
     };
+
+    protected interceptors: Interceptor[] = [];
 
     constructor(basePath?: string);
     constructor(basePathOrUsername: string, password?: string, basePath?: string) {
@@ -68,6 +70,14 @@ export class StorageV1Api {
         this._basePath = basePath;
     }
 
+    set defaultHeaders(defaultHeaders: any) {
+        this._defaultHeaders = defaultHeaders;
+    }
+
+    get defaultHeaders() {
+        return this._defaultHeaders;
+    }
+
     get basePath() {
         return this._basePath;
     }
@@ -78,6 +88,10 @@ export class StorageV1Api {
 
     public setApiKey(key: StorageV1ApiApiKeys, value: string) {
         (this.authentications as any)[StorageV1ApiApiKeys[key]].apiKey = value;
+    }
+
+    public addInterceptor(interceptor: Interceptor) {
+        this.interceptors.push(interceptor);
     }
 
     /**
@@ -96,7 +110,7 @@ export class StorageV1Api {
     ): Promise<{ response: http.IncomingMessage; body: V1StorageClass }> {
         const localVarPath = this.basePath + '/apis/storage.k8s.io/v1/storageclasses';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -138,14 +152,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -191,7 +212,7 @@ export class StorageV1Api {
     ): Promise<{ response: http.IncomingMessage; body: V1VolumeAttachment }> {
         const localVarPath = this.basePath + '/apis/storage.k8s.io/v1/volumeattachments';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -235,14 +256,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -308,7 +336,7 @@ export class StorageV1Api {
     ): Promise<{ response: http.IncomingMessage; body: V1Status }> {
         const localVarPath = this.basePath + '/apis/storage.k8s.io/v1/storageclasses';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -400,14 +428,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -467,7 +502,7 @@ export class StorageV1Api {
     ): Promise<{ response: http.IncomingMessage; body: V1Status }> {
         const localVarPath = this.basePath + '/apis/storage.k8s.io/v1/volumeattachments';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -559,14 +594,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -617,7 +659,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -676,14 +718,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -734,7 +783,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -795,14 +844,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -834,7 +890,7 @@ export class StorageV1Api {
     ): Promise<{ response: http.IncomingMessage; body: V1APIResourceList }> {
         const localVarPath = this.basePath + '/apis/storage.k8s.io/v1/';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -858,14 +914,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -921,7 +984,7 @@ export class StorageV1Api {
     ): Promise<{ response: http.IncomingMessage; body: V1StorageClassList }> {
         const localVarPath = this.basePath + '/apis/storage.k8s.io/v1/storageclasses';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = [
             'application/json',
             'application/yaml',
@@ -993,14 +1056,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1056,7 +1126,7 @@ export class StorageV1Api {
     ): Promise<{ response: http.IncomingMessage; body: V1VolumeAttachmentList }> {
         const localVarPath = this.basePath + '/apis/storage.k8s.io/v1/volumeattachments';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = [
             'application/json',
             'application/yaml',
@@ -1128,14 +1198,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1190,7 +1267,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1241,14 +1318,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1303,7 +1387,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1358,14 +1442,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1420,7 +1511,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1475,14 +1566,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1533,7 +1631,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1574,14 +1672,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1632,7 +1737,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1675,14 +1780,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1729,7 +1841,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1764,14 +1876,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1824,7 +1943,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1875,14 +1994,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1935,7 +2061,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1986,14 +2112,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2046,7 +2179,7 @@ export class StorageV1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml', 'application/vnd.kubernetes.protobuf'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2097,14 +2230,21 @@ export class StorageV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;

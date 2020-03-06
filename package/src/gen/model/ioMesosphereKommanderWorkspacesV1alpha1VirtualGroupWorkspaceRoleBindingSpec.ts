@@ -10,13 +10,14 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef';
 
 export class IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupWorkspaceRoleBindingSpec {
     'placement'?: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement;
-    'virtualGroupRef'?: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef;
-    'workspaceRoleRef'?: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef;
+    'virtualGroupRef': IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef;
+    'workspaceRoleRef': IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef;
 
     static discriminator: string | undefined = undefined;
 

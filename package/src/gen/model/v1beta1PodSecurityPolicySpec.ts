@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1beta1AllowedCSIDriver } from './v1beta1AllowedCSIDriver';
 import { V1beta1AllowedFlexVolume } from './v1beta1AllowedFlexVolume';
 import { V1beta1AllowedHostPath } from './v1beta1AllowedHostPath';

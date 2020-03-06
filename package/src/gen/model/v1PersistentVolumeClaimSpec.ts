@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1LabelSelector } from './v1LabelSelector';
 import { V1ResourceRequirements } from './v1ResourceRequirements';
 import { V1TypedLocalObjectReference } from './v1TypedLocalObjectReference';

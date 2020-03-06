@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * Reference to a secret that contains the client secret. The secret should contain `client-secret` key like the following: ------- apiVersion: v1 kind: Secret metadata: name: static-client-secret type: Opaque data:   client-secret: ...
  */

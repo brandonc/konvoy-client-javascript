@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef';

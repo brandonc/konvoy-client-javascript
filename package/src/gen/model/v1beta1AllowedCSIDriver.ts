@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * AllowedCSIDriver represents a single inline CSI Driver that is allowed to be used.
  */

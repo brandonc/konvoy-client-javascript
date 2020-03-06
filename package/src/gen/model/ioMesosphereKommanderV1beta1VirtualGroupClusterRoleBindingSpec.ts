@@ -10,17 +10,17 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement';
-import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef';
 import { IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef } from './ioMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef';
 
 /**
  * VirtualGroupClusterRoleBindingSpec defines the desired state of VirtualGroupClusterRoleBinding
  */
 export class IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingSpec {
-    'clusterRoleRef'?: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef;
+    'clusterRoleRef': IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef;
     'placement'?: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecPlacement;
-    'virtualGroupRef'?: IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef;
+    'virtualGroupRef': IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef;
 
     static discriminator: string | undefined = undefined;
 
@@ -28,7 +28,7 @@ export class IoMesosphereKommanderV1beta1VirtualGroupClusterRoleBindingSpec {
         {
             name: 'clusterRoleRef',
             baseName: 'clusterRoleRef',
-            type: 'IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecRoleRef',
+            type: 'IoMesosphereKommanderV1beta1VirtualGroupRoleBindingSpecVirtualGroupRef',
         },
         {
             name: 'placement',

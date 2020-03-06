@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ObjectMeta } from './v1ObjectMeta';
 import { V1beta1CertificateSigningRequestSpec } from './v1beta1CertificateSigningRequestSpec';
 import { V1beta1CertificateSigningRequestStatus } from './v1beta1CertificateSigningRequestStatus';

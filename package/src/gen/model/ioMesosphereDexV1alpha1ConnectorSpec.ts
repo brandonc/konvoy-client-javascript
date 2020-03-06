@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereDexV1alpha1ConnectorSpecGithub } from './ioMesosphereDexV1alpha1ConnectorSpecGithub';
 import { IoMesosphereDexV1alpha1ConnectorSpecLdap } from './ioMesosphereDexV1alpha1ConnectorSpecLdap';
 import { IoMesosphereDexV1alpha1ConnectorSpecOidc } from './ioMesosphereDexV1alpha1ConnectorSpecOidc';

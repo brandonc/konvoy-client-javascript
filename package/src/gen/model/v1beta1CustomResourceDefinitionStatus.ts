@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1beta1CustomResourceDefinitionCondition } from './v1beta1CustomResourceDefinitionCondition';
 import { V1beta1CustomResourceDefinitionNames } from './v1beta1CustomResourceDefinitionNames';
 

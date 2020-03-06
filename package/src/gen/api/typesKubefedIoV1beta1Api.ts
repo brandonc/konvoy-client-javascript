@@ -15,7 +15,6 @@ import http = require('http');
 
 /* tslint:disable:no-unused-locals */
 import { IoKubefedTypesV1beta1FederatedAddonList } from '../model/ioKubefedTypesV1beta1FederatedAddonList';
-import { IoKubefedTypesV1beta1FederatedAddonsDeploymentList } from '../model/ioKubefedTypesV1beta1FederatedAddonsDeploymentList';
 import { IoKubefedTypesV1beta1FederatedClusterAddonList } from '../model/ioKubefedTypesV1beta1FederatedClusterAddonList';
 import { IoKubefedTypesV1beta1FederatedClusterRoleBindingList } from '../model/ioKubefedTypesV1beta1FederatedClusterRoleBindingList';
 import { IoKubefedTypesV1beta1FederatedClusterRoleList } from '../model/ioKubefedTypesV1beta1FederatedClusterRoleList';
@@ -34,8 +33,8 @@ import { IoKubefedTypesV1beta1FederatedServiceList } from '../model/ioKubefedTyp
 import { V1DeleteOptions } from '../model/v1DeleteOptions';
 import { V1Status } from '../model/v1Status';
 
-import { ObjectSerializer, Authentication, VoidAuth } from '../model/models';
-import { HttpBasicAuth, ApiKeyAuth, OAuth } from '../model/models';
+import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models';
+import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models';
 
 import { HttpError, RequestFile } from './apis';
 
@@ -51,13 +50,15 @@ export enum TypesKubefedIoV1beta1ApiApiKeys {
 
 export class TypesKubefedIoV1beta1Api {
     protected _basePath = defaultBasePath;
-    protected defaultHeaders: any = {};
+    protected _defaultHeaders: any = {};
     protected _useQuerystring: boolean = false;
 
     protected authentications = {
         default: <Authentication>new VoidAuth(),
         BearerToken: new ApiKeyAuth('header', 'authorization'),
     };
+
+    protected interceptors: Interceptor[] = [];
 
     constructor(basePath?: string);
     constructor(basePathOrUsername: string, password?: string, basePath?: string) {
@@ -80,6 +81,14 @@ export class TypesKubefedIoV1beta1Api {
         this._basePath = basePath;
     }
 
+    set defaultHeaders(defaultHeaders: any) {
+        this._defaultHeaders = defaultHeaders;
+    }
+
+    get defaultHeaders() {
+        return this._defaultHeaders;
+    }
+
     get basePath() {
         return this._basePath;
     }
@@ -90,6 +99,10 @@ export class TypesKubefedIoV1beta1Api {
 
     public setApiKey(key: TypesKubefedIoV1beta1ApiApiKeys, value: string) {
         (this.authentications as any)[TypesKubefedIoV1beta1ApiApiKeys[key]].apiKey = value;
+    }
+
+    public addInterceptor(interceptor: Interceptor) {
+        this.interceptors.push(interceptor);
     }
 
     /**
@@ -108,7 +121,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: object }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedclusteraddons';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -152,14 +165,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -199,7 +219,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: object }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedclusterroles';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -243,14 +263,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -290,7 +317,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: object }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedclusterrolebindings';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -334,14 +361,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -382,7 +416,7 @@ export class TypesKubefedIoV1beta1Api {
         const localVarPath =
             this.basePath + '/apis/types.kubefed.io/v1beta1/federatedcustomresourcedefinitions';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -426,14 +460,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -480,7 +521,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -531,119 +572,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{ response: http.IncomingMessage; body: object }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(body, 'object');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * create a FederatedAddonsDeployment
-     * @param namespace object name and auth scope, such as for teams and projects
-     * @param body
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param dryRun When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in an error response and no further processing of the request. Valid values are: - All: all dry run stages will be processed
-     * @param fieldManager fieldManager is a name associated with the actor or entity that is making these changes. The value must be less than or 128 characters long, and only contain printable characters, as defined by https://golang.org/pkg/unicode/#IsPrint.
-     */
-    public async createNamespacedFederatedAddonsDeployment(
-        namespace: string,
-        body: object,
-        pretty?: string,
-        dryRun?: string,
-        fieldManager?: string,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: object }> {
-        const localVarPath =
-            this.basePath +
-            '/apis/types.kubefed.io/v1beta1/namespaces/{namespace}/federatedaddonsdeployments'.replace(
-                '{' + 'namespace' + '}',
-                encodeURIComponent(String(namespace)),
-            );
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
 
-        // verify required parameter 'namespace' is not null or undefined
-        if (namespace === null || namespace === undefined) {
-            throw new Error(
-                'Required parameter namespace was null or undefined when calling createNamespacedFederatedAddonsDeployment.',
-            );
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
         }
 
-        // verify required parameter 'body' is not null or undefined
-        if (body === null || body === undefined) {
-            throw new Error(
-                'Required parameter body was null or undefined when calling createNamespacedFederatedAddonsDeployment.',
-            );
-        }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (dryRun !== undefined) {
-            localVarQueryParameters['dryRun'] = ObjectSerializer.serialize(dryRun, 'string');
-        }
-
-        if (fieldManager !== undefined) {
-            localVarQueryParameters['fieldManager'] = ObjectSerializer.serialize(fieldManager, 'string');
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'POST',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-            body: ObjectSerializer.serialize(body, 'object'),
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -690,7 +633,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -741,14 +684,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -795,7 +745,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -846,14 +796,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -900,7 +857,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -951,14 +908,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1005,7 +969,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1056,14 +1020,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1110,7 +1081,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1161,14 +1132,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1215,7 +1193,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1266,14 +1244,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1320,7 +1305,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1371,14 +1356,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1425,7 +1417,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1476,14 +1468,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1530,7 +1529,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1581,14 +1580,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1635,7 +1641,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1686,14 +1692,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1740,7 +1753,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1791,14 +1804,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1848,7 +1868,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: V1Status }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedclusteraddons';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1914,14 +1934,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1971,7 +1998,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: V1Status }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedclusterroles';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2037,14 +2064,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2094,7 +2128,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: V1Status }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedclusterrolebindings';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2160,14 +2194,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2218,7 +2259,7 @@ export class TypesKubefedIoV1beta1Api {
         const localVarPath =
             this.basePath + '/apis/types.kubefed.io/v1beta1/federatedcustomresourcedefinitions';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2284,14 +2325,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2348,7 +2396,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2421,151 +2469,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{ response: http.IncomingMessage; body: V1Status }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(body, 'V1Status');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * delete collection of FederatedAddonsDeployment
-     * @param namespace object name and auth scope, such as for teams and projects
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param allowWatchBookmarks allowWatchBookmarks requests watch events with type \&quot;BOOKMARK\&quot;. Servers that do not implement bookmarks may ignore this flag and bookmarks are sent at the server\&#39;s discretion. Clients should not assume bookmarks are returned at any specific interval, nor may they assume the server will send any BOOKMARK event during a session. If this is not a watch, this field is ignored. If the feature gate WatchBookmarks is not enabled in apiserver, this field is ignored.  This field is beta.
-     * @param _continue The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server, the server will respond with a 410 ResourceExpired error together with a continue token. If the client needs a consistent list, it must restart their list without the continue field. Otherwise, the client may send another list request with the token received with the 410 error, the server will respond with a list starting from the next key, but from the latest snapshot, which is inconsistent from the previous list results - objects that are created, modified, or deleted after the first list request will be included in the response, as long as their keys are after the \&quot;next key\&quot;.  This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.
-     * @param fieldSelector A selector to restrict the list of returned objects by their fields. Defaults to everything.
-     * @param labelSelector A selector to restrict the list of returned objects by their labels. Defaults to everything.
-     * @param limit limit is a maximum number of responses to return for a list call. If more items exist, the server will set the &#x60;continue&#x60; field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.  The server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.
-     * @param resourceVersion When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it\&#39;s 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.
-     * @param timeoutSeconds Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.
-     * @param watch Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.
-     */
-    public async deleteCollectionNamespacedFederatedAddonsDeployment(
-        namespace: string,
-        pretty?: string,
-        allowWatchBookmarks?: boolean,
-        _continue?: string,
-        fieldSelector?: string,
-        labelSelector?: string,
-        limit?: number,
-        resourceVersion?: string,
-        timeoutSeconds?: number,
-        watch?: boolean,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: V1Status }> {
-        const localVarPath =
-            this.basePath +
-            '/apis/types.kubefed.io/v1beta1/namespaces/{namespace}/federatedaddonsdeployments'.replace(
-                '{' + 'namespace' + '}',
-                encodeURIComponent(String(namespace)),
-            );
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
-
-        // verify required parameter 'namespace' is not null or undefined
-        if (namespace === null || namespace === undefined) {
-            throw new Error(
-                'Required parameter namespace was null or undefined when calling deleteCollectionNamespacedFederatedAddonsDeployment.',
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
             );
         }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (allowWatchBookmarks !== undefined) {
-            localVarQueryParameters['allowWatchBookmarks'] = ObjectSerializer.serialize(
-                allowWatchBookmarks,
-                'boolean',
-            );
-        }
-
-        if (_continue !== undefined) {
-            localVarQueryParameters['continue'] = ObjectSerializer.serialize(_continue, 'string');
-        }
-
-        if (fieldSelector !== undefined) {
-            localVarQueryParameters['fieldSelector'] = ObjectSerializer.serialize(fieldSelector, 'string');
-        }
-
-        if (labelSelector !== undefined) {
-            localVarQueryParameters['labelSelector'] = ObjectSerializer.serialize(labelSelector, 'string');
-        }
-
-        if (limit !== undefined) {
-            localVarQueryParameters['limit'] = ObjectSerializer.serialize(limit, 'number');
-        }
-
-        if (resourceVersion !== undefined) {
-            localVarQueryParameters['resourceVersion'] = ObjectSerializer.serialize(
-                resourceVersion,
-                'string',
-            );
-        }
-
-        if (timeoutSeconds !== undefined) {
-            localVarQueryParameters['timeoutSeconds'] = ObjectSerializer.serialize(timeoutSeconds, 'number');
-        }
-
-        if (watch !== undefined) {
-            localVarQueryParameters['watch'] = ObjectSerializer.serialize(watch, 'boolean');
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'DELETE',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2622,7 +2540,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2695,14 +2613,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2759,7 +2684,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2832,14 +2757,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2896,7 +2828,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2969,14 +2901,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3033,7 +2972,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3106,14 +3045,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3170,7 +3116,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3243,14 +3189,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3307,7 +3260,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3380,14 +3333,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3444,7 +3404,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3517,14 +3477,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3581,7 +3548,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3654,14 +3621,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3718,7 +3692,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3791,14 +3765,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3855,7 +3836,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3928,14 +3909,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3992,7 +3980,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4065,14 +4053,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4123,7 +4118,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4184,14 +4179,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4242,7 +4244,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4303,14 +4305,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4361,7 +4370,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4422,14 +4431,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4480,7 +4496,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4541,14 +4557,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4600,7 +4623,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4668,141 +4691,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{ response: http.IncomingMessage; body: V1Status }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(body, 'V1Status');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * delete a FederatedAddonsDeployment
-     * @param name name of the FederatedAddonsDeployment
-     * @param namespace object name and auth scope, such as for teams and projects
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param dryRun When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in an error response and no further processing of the request. Valid values are: - All: all dry run stages will be processed
-     * @param gracePeriodSeconds The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.
-     * @param orphanDependents Deprecated: please use the PropagationPolicy, this field will be deprecated in 1.7. Should the dependent objects be orphaned. If true/false, the \&quot;orphan\&quot; finalizer will be added to/removed from the object\&#39;s finalizers list. Either this field or PropagationPolicy may be set, but not both.
-     * @param propagationPolicy Whether and how garbage collection will be performed. Either this field or OrphanDependents may be set, but not both. The default policy is decided by the existing finalizer set in the metadata.finalizers and the resource-specific default policy. Acceptable values are: \&#39;Orphan\&#39; - orphan the dependents; \&#39;Background\&#39; - allow the garbage collector to delete the dependents in the background; \&#39;Foreground\&#39; - a cascading policy that deletes all dependents in the foreground.
-     * @param body
-     */
-    public async deleteNamespacedFederatedAddonsDeployment(
-        name: string,
-        namespace: string,
-        pretty?: string,
-        dryRun?: string,
-        gracePeriodSeconds?: number,
-        orphanDependents?: boolean,
-        propagationPolicy?: string,
-        body?: V1DeleteOptions,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: V1Status }> {
-        const localVarPath =
-            this.basePath +
-            '/apis/types.kubefed.io/v1beta1/namespaces/{namespace}/federatedaddonsdeployments/{name}'
-                .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
-                .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
-
-        // verify required parameter 'name' is not null or undefined
-        if (name === null || name === undefined) {
-            throw new Error(
-                'Required parameter name was null or undefined when calling deleteNamespacedFederatedAddonsDeployment.',
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
             );
         }
-
-        // verify required parameter 'namespace' is not null or undefined
-        if (namespace === null || namespace === undefined) {
-            throw new Error(
-                'Required parameter namespace was null or undefined when calling deleteNamespacedFederatedAddonsDeployment.',
-            );
-        }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (dryRun !== undefined) {
-            localVarQueryParameters['dryRun'] = ObjectSerializer.serialize(dryRun, 'string');
-        }
-
-        if (gracePeriodSeconds !== undefined) {
-            localVarQueryParameters['gracePeriodSeconds'] = ObjectSerializer.serialize(
-                gracePeriodSeconds,
-                'number',
-            );
-        }
-
-        if (orphanDependents !== undefined) {
-            localVarQueryParameters['orphanDependents'] = ObjectSerializer.serialize(
-                orphanDependents,
-                'boolean',
-            );
-        }
-
-        if (propagationPolicy !== undefined) {
-            localVarQueryParameters['propagationPolicy'] = ObjectSerializer.serialize(
-                propagationPolicy,
-                'string',
-            );
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'DELETE',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-            body: ObjectSerializer.serialize(body, 'V1DeleteOptions'),
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4854,7 +4757,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4922,14 +4825,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4981,7 +4891,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5049,14 +4959,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5108,7 +5025,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5176,14 +5093,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5235,7 +5159,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5303,14 +5227,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5362,7 +5293,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5430,14 +5361,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5489,7 +5427,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5557,14 +5495,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5616,7 +5561,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5684,14 +5629,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5743,7 +5695,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5811,14 +5763,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5870,7 +5829,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5938,14 +5897,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5997,7 +5963,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6065,14 +6031,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6124,7 +6097,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6192,14 +6165,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6249,7 +6229,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedAddonList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedaddons';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6315,14 +6295,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6339,135 +6326,6 @@ export class TypesKubefedIoV1beta1Api {
                         reject(error);
                     } else {
                         body = ObjectSerializer.deserialize(body, 'IoKubefedTypesV1beta1FederatedAddonList');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * list objects of kind FederatedAddonsDeployment
-     * @param allowWatchBookmarks allowWatchBookmarks requests watch events with type \&quot;BOOKMARK\&quot;. Servers that do not implement bookmarks may ignore this flag and bookmarks are sent at the server\&#39;s discretion. Clients should not assume bookmarks are returned at any specific interval, nor may they assume the server will send any BOOKMARK event during a session. If this is not a watch, this field is ignored. If the feature gate WatchBookmarks is not enabled in apiserver, this field is ignored.  This field is beta.
-     * @param _continue The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server, the server will respond with a 410 ResourceExpired error together with a continue token. If the client needs a consistent list, it must restart their list without the continue field. Otherwise, the client may send another list request with the token received with the 410 error, the server will respond with a list starting from the next key, but from the latest snapshot, which is inconsistent from the previous list results - objects that are created, modified, or deleted after the first list request will be included in the response, as long as their keys are after the \&quot;next key\&quot;.  This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.
-     * @param fieldSelector A selector to restrict the list of returned objects by their fields. Defaults to everything.
-     * @param labelSelector A selector to restrict the list of returned objects by their labels. Defaults to everything.
-     * @param limit limit is a maximum number of responses to return for a list call. If more items exist, the server will set the &#x60;continue&#x60; field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.  The server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param resourceVersion When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it\&#39;s 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.
-     * @param timeoutSeconds Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.
-     * @param watch Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.
-     */
-    public async listFederatedAddonsDeploymentForAllNamespaces(
-        allowWatchBookmarks?: boolean,
-        _continue?: string,
-        fieldSelector?: string,
-        labelSelector?: string,
-        limit?: number,
-        pretty?: string,
-        resourceVersion?: string,
-        timeoutSeconds?: number,
-        watch?: boolean,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedAddonsDeploymentList }> {
-        const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedaddonsdeployments';
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
-
-        if (allowWatchBookmarks !== undefined) {
-            localVarQueryParameters['allowWatchBookmarks'] = ObjectSerializer.serialize(
-                allowWatchBookmarks,
-                'boolean',
-            );
-        }
-
-        if (_continue !== undefined) {
-            localVarQueryParameters['continue'] = ObjectSerializer.serialize(_continue, 'string');
-        }
-
-        if (fieldSelector !== undefined) {
-            localVarQueryParameters['fieldSelector'] = ObjectSerializer.serialize(fieldSelector, 'string');
-        }
-
-        if (labelSelector !== undefined) {
-            localVarQueryParameters['labelSelector'] = ObjectSerializer.serialize(labelSelector, 'string');
-        }
-
-        if (limit !== undefined) {
-            localVarQueryParameters['limit'] = ObjectSerializer.serialize(limit, 'number');
-        }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (resourceVersion !== undefined) {
-            localVarQueryParameters['resourceVersion'] = ObjectSerializer.serialize(
-                resourceVersion,
-                'string',
-            );
-        }
-
-        if (timeoutSeconds !== undefined) {
-            localVarQueryParameters['timeoutSeconds'] = ObjectSerializer.serialize(timeoutSeconds, 'number');
-        }
-
-        if (watch !== undefined) {
-            localVarQueryParameters['watch'] = ObjectSerializer.serialize(watch, 'boolean');
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'GET',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{
-                response: http.IncomingMessage;
-                body: IoKubefedTypesV1beta1FederatedAddonsDeploymentList;
-            }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(
-                            body,
-                            'IoKubefedTypesV1beta1FederatedAddonsDeploymentList',
-                        );
                         if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
                             resolve({ response: response, body: body });
                         } else {
@@ -6504,7 +6362,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedClusterAddonList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedclusteraddons';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6570,14 +6428,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6633,7 +6498,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedClusterRoleList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedclusterroles';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6699,14 +6564,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6765,7 +6637,7 @@ export class TypesKubefedIoV1beta1Api {
     }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedclusterrolebindings';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6831,14 +6703,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6894,7 +6773,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedConfigMapList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedconfigmaps';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6960,14 +6839,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7027,7 +6913,7 @@ export class TypesKubefedIoV1beta1Api {
         const localVarPath =
             this.basePath + '/apis/types.kubefed.io/v1beta1/federatedcustomresourcedefinitions';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7093,14 +6979,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7156,7 +7049,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedDeploymentList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federateddeployments';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7222,14 +7115,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7285,7 +7185,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedIngressList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedingresses';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7351,14 +7251,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7414,7 +7321,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedJobList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedjobs';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7480,14 +7387,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7540,7 +7454,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedNamespaceList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatednamespaces';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7606,14 +7520,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7669,7 +7590,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedReplicaSetList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedreplicasets';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7735,14 +7656,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7798,7 +7726,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedRoleBindingList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedrolebindings';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7864,14 +7792,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7927,7 +7862,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedRoleList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedroles';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7993,14 +7928,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8053,7 +7995,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedSecretList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedsecrets';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8119,14 +8061,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8179,7 +8128,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedServiceAccountList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedserviceaccounts';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8245,14 +8194,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8308,7 +8264,7 @@ export class TypesKubefedIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedServiceList }> {
         const localVarPath = this.basePath + '/apis/types.kubefed.io/v1beta1/federatedservices';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8374,14 +8330,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8444,7 +8407,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8517,14 +8480,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8541,149 +8511,6 @@ export class TypesKubefedIoV1beta1Api {
                         reject(error);
                     } else {
                         body = ObjectSerializer.deserialize(body, 'IoKubefedTypesV1beta1FederatedAddonList');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * list objects of kind FederatedAddonsDeployment
-     * @param namespace object name and auth scope, such as for teams and projects
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param allowWatchBookmarks allowWatchBookmarks requests watch events with type \&quot;BOOKMARK\&quot;. Servers that do not implement bookmarks may ignore this flag and bookmarks are sent at the server\&#39;s discretion. Clients should not assume bookmarks are returned at any specific interval, nor may they assume the server will send any BOOKMARK event during a session. If this is not a watch, this field is ignored. If the feature gate WatchBookmarks is not enabled in apiserver, this field is ignored.  This field is beta.
-     * @param _continue The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server, the server will respond with a 410 ResourceExpired error together with a continue token. If the client needs a consistent list, it must restart their list without the continue field. Otherwise, the client may send another list request with the token received with the 410 error, the server will respond with a list starting from the next key, but from the latest snapshot, which is inconsistent from the previous list results - objects that are created, modified, or deleted after the first list request will be included in the response, as long as their keys are after the \&quot;next key\&quot;.  This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.
-     * @param fieldSelector A selector to restrict the list of returned objects by their fields. Defaults to everything.
-     * @param labelSelector A selector to restrict the list of returned objects by their labels. Defaults to everything.
-     * @param limit limit is a maximum number of responses to return for a list call. If more items exist, the server will set the &#x60;continue&#x60; field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.  The server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.
-     * @param resourceVersion When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it\&#39;s 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.
-     * @param timeoutSeconds Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.
-     * @param watch Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.
-     */
-    public async listNamespacedFederatedAddonsDeployment(
-        namespace: string,
-        pretty?: string,
-        allowWatchBookmarks?: boolean,
-        _continue?: string,
-        fieldSelector?: string,
-        labelSelector?: string,
-        limit?: number,
-        resourceVersion?: string,
-        timeoutSeconds?: number,
-        watch?: boolean,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: IoKubefedTypesV1beta1FederatedAddonsDeploymentList }> {
-        const localVarPath =
-            this.basePath +
-            '/apis/types.kubefed.io/v1beta1/namespaces/{namespace}/federatedaddonsdeployments'.replace(
-                '{' + 'namespace' + '}',
-                encodeURIComponent(String(namespace)),
-            );
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
-
-        // verify required parameter 'namespace' is not null or undefined
-        if (namespace === null || namespace === undefined) {
-            throw new Error(
-                'Required parameter namespace was null or undefined when calling listNamespacedFederatedAddonsDeployment.',
-            );
-        }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (allowWatchBookmarks !== undefined) {
-            localVarQueryParameters['allowWatchBookmarks'] = ObjectSerializer.serialize(
-                allowWatchBookmarks,
-                'boolean',
-            );
-        }
-
-        if (_continue !== undefined) {
-            localVarQueryParameters['continue'] = ObjectSerializer.serialize(_continue, 'string');
-        }
-
-        if (fieldSelector !== undefined) {
-            localVarQueryParameters['fieldSelector'] = ObjectSerializer.serialize(fieldSelector, 'string');
-        }
-
-        if (labelSelector !== undefined) {
-            localVarQueryParameters['labelSelector'] = ObjectSerializer.serialize(labelSelector, 'string');
-        }
-
-        if (limit !== undefined) {
-            localVarQueryParameters['limit'] = ObjectSerializer.serialize(limit, 'number');
-        }
-
-        if (resourceVersion !== undefined) {
-            localVarQueryParameters['resourceVersion'] = ObjectSerializer.serialize(
-                resourceVersion,
-                'string',
-            );
-        }
-
-        if (timeoutSeconds !== undefined) {
-            localVarQueryParameters['timeoutSeconds'] = ObjectSerializer.serialize(timeoutSeconds, 'number');
-        }
-
-        if (watch !== undefined) {
-            localVarQueryParameters['watch'] = ObjectSerializer.serialize(watch, 'boolean');
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'GET',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{
-                response: http.IncomingMessage;
-                body: IoKubefedTypesV1beta1FederatedAddonsDeploymentList;
-            }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(
-                            body,
-                            'IoKubefedTypesV1beta1FederatedAddonsDeploymentList',
-                        );
                         if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
                             resolve({ response: response, body: body });
                         } else {
@@ -8727,7 +8554,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8800,14 +8627,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8870,7 +8704,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8943,14 +8777,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9013,7 +8854,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9086,14 +8927,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9156,7 +9004,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9229,14 +9077,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9296,7 +9151,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9369,14 +9224,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9439,7 +9301,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9512,14 +9374,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9582,7 +9451,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9655,14 +9524,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9722,7 +9598,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9795,14 +9671,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9865,7 +9748,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9938,14 +9821,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10005,7 +9895,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10078,14 +9968,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10148,7 +10045,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10221,14 +10118,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10281,7 +10185,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10332,14 +10236,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10386,7 +10297,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10437,14 +10348,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10491,7 +10409,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10542,14 +10460,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10596,7 +10521,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10647,14 +10572,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10701,7 +10633,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10752,14 +10684,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10806,7 +10745,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10857,14 +10796,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10911,7 +10857,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10962,14 +10908,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -11016,7 +10969,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -11067,14 +11020,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -11122,7 +11082,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -11180,14 +11140,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -11235,7 +11202,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -11293,240 +11260,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{ response: http.IncomingMessage; body: object }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(body, 'object');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * partially update the specified FederatedAddonsDeployment
-     * @param name name of the FederatedAddonsDeployment
-     * @param namespace object name and auth scope, such as for teams and projects
-     * @param body
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param dryRun When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in an error response and no further processing of the request. Valid values are: - All: all dry run stages will be processed
-     * @param fieldManager fieldManager is a name associated with the actor or entity that is making these changes. The value must be less than or 128 characters long, and only contain printable characters, as defined by https://golang.org/pkg/unicode/#IsPrint.
-     */
-    public async patchNamespacedFederatedAddonsDeployment(
-        name: string,
-        namespace: string,
-        body: object,
-        pretty?: string,
-        dryRun?: string,
-        fieldManager?: string,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: object }> {
-        const localVarPath =
-            this.basePath +
-            '/apis/types.kubefed.io/v1beta1/namespaces/{namespace}/federatedaddonsdeployments/{name}'
-                .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
-                .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
-
-        // verify required parameter 'name' is not null or undefined
-        if (name === null || name === undefined) {
-            throw new Error(
-                'Required parameter name was null or undefined when calling patchNamespacedFederatedAddonsDeployment.',
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
             );
         }
-
-        // verify required parameter 'namespace' is not null or undefined
-        if (namespace === null || namespace === undefined) {
-            throw new Error(
-                'Required parameter namespace was null or undefined when calling patchNamespacedFederatedAddonsDeployment.',
-            );
-        }
-
-        // verify required parameter 'body' is not null or undefined
-        if (body === null || body === undefined) {
-            throw new Error(
-                'Required parameter body was null or undefined when calling patchNamespacedFederatedAddonsDeployment.',
-            );
-        }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (dryRun !== undefined) {
-            localVarQueryParameters['dryRun'] = ObjectSerializer.serialize(dryRun, 'string');
-        }
-
-        if (fieldManager !== undefined) {
-            localVarQueryParameters['fieldManager'] = ObjectSerializer.serialize(fieldManager, 'string');
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'PATCH',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-            body: ObjectSerializer.serialize(body, 'object'),
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{ response: http.IncomingMessage; body: object }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(body, 'object');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * partially update status of the specified FederatedAddonsDeployment
-     * @param name name of the FederatedAddonsDeployment
-     * @param namespace object name and auth scope, such as for teams and projects
-     * @param body
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param dryRun When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in an error response and no further processing of the request. Valid values are: - All: all dry run stages will be processed
-     * @param fieldManager fieldManager is a name associated with the actor or entity that is making these changes. The value must be less than or 128 characters long, and only contain printable characters, as defined by https://golang.org/pkg/unicode/#IsPrint.
-     */
-    public async patchNamespacedFederatedAddonsDeploymentStatus(
-        name: string,
-        namespace: string,
-        body: object,
-        pretty?: string,
-        dryRun?: string,
-        fieldManager?: string,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: object }> {
-        const localVarPath =
-            this.basePath +
-            '/apis/types.kubefed.io/v1beta1/namespaces/{namespace}/federatedaddonsdeployments/{name}/status'
-                .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
-                .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
 
-        // verify required parameter 'name' is not null or undefined
-        if (name === null || name === undefined) {
-            throw new Error(
-                'Required parameter name was null or undefined when calling patchNamespacedFederatedAddonsDeploymentStatus.',
-            );
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
         }
 
-        // verify required parameter 'namespace' is not null or undefined
-        if (namespace === null || namespace === undefined) {
-            throw new Error(
-                'Required parameter namespace was null or undefined when calling patchNamespacedFederatedAddonsDeploymentStatus.',
-            );
-        }
-
-        // verify required parameter 'body' is not null or undefined
-        if (body === null || body === undefined) {
-            throw new Error(
-                'Required parameter body was null or undefined when calling patchNamespacedFederatedAddonsDeploymentStatus.',
-            );
-        }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (dryRun !== undefined) {
-            localVarQueryParameters['dryRun'] = ObjectSerializer.serialize(dryRun, 'string');
-        }
-
-        if (fieldManager !== undefined) {
-            localVarQueryParameters['fieldManager'] = ObjectSerializer.serialize(fieldManager, 'string');
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'PATCH',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-            body: ObjectSerializer.serialize(body, 'object'),
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -11574,7 +11322,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -11632,14 +11380,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -11687,7 +11442,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -11745,14 +11500,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -11800,7 +11562,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -11858,14 +11620,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -11913,7 +11682,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -11971,14 +11740,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -12026,7 +11802,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -12084,14 +11860,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -12139,7 +11922,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -12197,14 +11980,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -12252,7 +12042,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -12310,14 +12100,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -12365,7 +12162,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -12423,14 +12220,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -12478,7 +12282,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -12536,14 +12340,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -12591,7 +12402,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -12649,14 +12460,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -12704,7 +12522,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -12762,14 +12580,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -12817,7 +12642,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -12875,14 +12700,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -12930,7 +12762,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -12988,14 +12820,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -13043,7 +12882,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -13101,14 +12940,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -13156,7 +13002,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -13214,14 +13060,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -13269,7 +13122,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -13327,14 +13180,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -13382,7 +13242,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -13440,14 +13300,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -13495,7 +13362,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -13553,14 +13420,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -13608,7 +13482,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -13666,14 +13540,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -13721,7 +13602,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -13779,14 +13660,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -13834,7 +13722,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -13892,14 +13780,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -13947,7 +13842,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14005,14 +13900,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -14055,7 +13957,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14097,14 +13999,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -14147,7 +14056,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14189,14 +14098,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -14239,7 +14155,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14281,14 +14197,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -14331,7 +14254,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14373,14 +14296,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -14423,7 +14353,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14465,14 +14395,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -14515,7 +14452,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14557,14 +14494,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -14607,7 +14551,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14649,14 +14593,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -14699,7 +14650,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14741,14 +14692,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -14792,7 +14750,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14841,14 +14799,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -14892,7 +14857,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -14941,214 +14906,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{ response: http.IncomingMessage; body: object }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(body, 'object');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * read the specified FederatedAddonsDeployment
-     * @param name name of the FederatedAddonsDeployment
-     * @param namespace object name and auth scope, such as for teams and projects
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param resourceVersion When specified: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it\&#39;s 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.
-     */
-    public async readNamespacedFederatedAddonsDeployment(
-        name: string,
-        namespace: string,
-        pretty?: string,
-        resourceVersion?: string,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: object }> {
-        const localVarPath =
-            this.basePath +
-            '/apis/types.kubefed.io/v1beta1/namespaces/{namespace}/federatedaddonsdeployments/{name}'
-                .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
-                .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
-
-        // verify required parameter 'name' is not null or undefined
-        if (name === null || name === undefined) {
-            throw new Error(
-                'Required parameter name was null or undefined when calling readNamespacedFederatedAddonsDeployment.',
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
             );
         }
-
-        // verify required parameter 'namespace' is not null or undefined
-        if (namespace === null || namespace === undefined) {
-            throw new Error(
-                'Required parameter namespace was null or undefined when calling readNamespacedFederatedAddonsDeployment.',
-            );
-        }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (resourceVersion !== undefined) {
-            localVarQueryParameters['resourceVersion'] = ObjectSerializer.serialize(
-                resourceVersion,
-                'string',
-            );
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'GET',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{ response: http.IncomingMessage; body: object }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(body, 'object');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * read status of the specified FederatedAddonsDeployment
-     * @param name name of the FederatedAddonsDeployment
-     * @param namespace object name and auth scope, such as for teams and projects
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param resourceVersion When specified: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it\&#39;s 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.
-     */
-    public async readNamespacedFederatedAddonsDeploymentStatus(
-        name: string,
-        namespace: string,
-        pretty?: string,
-        resourceVersion?: string,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: object }> {
-        const localVarPath =
-            this.basePath +
-            '/apis/types.kubefed.io/v1beta1/namespaces/{namespace}/federatedaddonsdeployments/{name}/status'
-                .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
-                .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
 
-        // verify required parameter 'name' is not null or undefined
-        if (name === null || name === undefined) {
-            throw new Error(
-                'Required parameter name was null or undefined when calling readNamespacedFederatedAddonsDeploymentStatus.',
-            );
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
         }
 
-        // verify required parameter 'namespace' is not null or undefined
-        if (namespace === null || namespace === undefined) {
-            throw new Error(
-                'Required parameter namespace was null or undefined when calling readNamespacedFederatedAddonsDeploymentStatus.',
-            );
-        }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (resourceVersion !== undefined) {
-            localVarQueryParameters['resourceVersion'] = ObjectSerializer.serialize(
-                resourceVersion,
-                'string',
-            );
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'GET',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -15192,7 +14964,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -15241,14 +15013,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -15292,7 +15071,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -15341,14 +15120,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -15392,7 +15178,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -15441,14 +15227,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -15492,7 +15285,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -15541,14 +15334,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -15592,7 +15392,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -15641,14 +15441,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -15692,7 +15499,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -15741,14 +15548,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -15792,7 +15606,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -15841,14 +15655,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -15892,7 +15713,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -15941,14 +15762,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -15992,7 +15820,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -16041,14 +15869,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -16092,7 +15927,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -16141,14 +15976,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -16192,7 +16034,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -16241,14 +16083,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -16292,7 +16141,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -16341,14 +16190,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -16392,7 +16248,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -16441,14 +16297,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -16492,7 +16355,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -16541,14 +16404,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -16592,7 +16462,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -16641,14 +16511,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -16692,7 +16569,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -16741,14 +16618,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -16792,7 +16676,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -16841,14 +16725,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -16892,7 +16783,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -16941,14 +16832,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -16992,7 +16890,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -17041,14 +16939,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -17092,7 +16997,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -17141,14 +17046,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -17192,7 +17104,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -17241,14 +17153,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -17292,7 +17211,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -17341,14 +17260,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -17395,7 +17321,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -17446,14 +17372,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -17500,7 +17433,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -17551,14 +17484,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -17605,7 +17545,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -17656,14 +17596,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -17710,7 +17657,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -17761,14 +17708,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -17815,7 +17769,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -17866,14 +17820,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -17920,7 +17881,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -17971,14 +17932,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -18025,7 +17993,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -18076,14 +18044,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -18130,7 +18105,7 @@ export class TypesKubefedIoV1beta1Api {
                 encodeURIComponent(String(name)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -18181,14 +18156,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -18236,7 +18218,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -18294,14 +18276,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -18349,7 +18338,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -18407,240 +18396,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{ response: http.IncomingMessage; body: object }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(body, 'object');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * replace the specified FederatedAddonsDeployment
-     * @param name name of the FederatedAddonsDeployment
-     * @param namespace object name and auth scope, such as for teams and projects
-     * @param body
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param dryRun When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in an error response and no further processing of the request. Valid values are: - All: all dry run stages will be processed
-     * @param fieldManager fieldManager is a name associated with the actor or entity that is making these changes. The value must be less than or 128 characters long, and only contain printable characters, as defined by https://golang.org/pkg/unicode/#IsPrint.
-     */
-    public async replaceNamespacedFederatedAddonsDeployment(
-        name: string,
-        namespace: string,
-        body: object,
-        pretty?: string,
-        dryRun?: string,
-        fieldManager?: string,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: object }> {
-        const localVarPath =
-            this.basePath +
-            '/apis/types.kubefed.io/v1beta1/namespaces/{namespace}/federatedaddonsdeployments/{name}'
-                .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
-                .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
-
-        // verify required parameter 'name' is not null or undefined
-        if (name === null || name === undefined) {
-            throw new Error(
-                'Required parameter name was null or undefined when calling replaceNamespacedFederatedAddonsDeployment.',
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
             );
         }
-
-        // verify required parameter 'namespace' is not null or undefined
-        if (namespace === null || namespace === undefined) {
-            throw new Error(
-                'Required parameter namespace was null or undefined when calling replaceNamespacedFederatedAddonsDeployment.',
-            );
-        }
-
-        // verify required parameter 'body' is not null or undefined
-        if (body === null || body === undefined) {
-            throw new Error(
-                'Required parameter body was null or undefined when calling replaceNamespacedFederatedAddonsDeployment.',
-            );
-        }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (dryRun !== undefined) {
-            localVarQueryParameters['dryRun'] = ObjectSerializer.serialize(dryRun, 'string');
-        }
-
-        if (fieldManager !== undefined) {
-            localVarQueryParameters['fieldManager'] = ObjectSerializer.serialize(fieldManager, 'string');
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'PUT',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-            body: ObjectSerializer.serialize(body, 'object'),
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
-            if (Object.keys(localVarFormParams).length) {
-                if (localVarUseFormData) {
-                    (<any>localVarRequestOptions).formData = localVarFormParams;
-                } else {
-                    localVarRequestOptions.form = localVarFormParams;
-                }
-            }
-            return new Promise<{ response: http.IncomingMessage; body: object }>((resolve, reject) => {
-                localVarRequest(localVarRequestOptions, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        body = ObjectSerializer.deserialize(body, 'object');
-                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-                            resolve({ response: response, body: body });
-                        } else {
-                            reject(new HttpError(response, body, response.statusCode));
-                        }
-                    }
-                });
-            });
-        });
-    }
-    /**
-     * replace status of the specified FederatedAddonsDeployment
-     * @param name name of the FederatedAddonsDeployment
-     * @param namespace object name and auth scope, such as for teams and projects
-     * @param body
-     * @param pretty If \&#39;true\&#39;, then the output is pretty printed.
-     * @param dryRun When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in an error response and no further processing of the request. Valid values are: - All: all dry run stages will be processed
-     * @param fieldManager fieldManager is a name associated with the actor or entity that is making these changes. The value must be less than or 128 characters long, and only contain printable characters, as defined by https://golang.org/pkg/unicode/#IsPrint.
-     */
-    public async replaceNamespacedFederatedAddonsDeploymentStatus(
-        name: string,
-        namespace: string,
-        body: object,
-        pretty?: string,
-        dryRun?: string,
-        fieldManager?: string,
-        options: { headers: { [name: string]: string } } = { headers: {} },
-    ): Promise<{ response: http.IncomingMessage; body: object }> {
-        const localVarPath =
-            this.basePath +
-            '/apis/types.kubefed.io/v1beta1/namespaces/{namespace}/federatedaddonsdeployments/{name}/status'
-                .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
-                .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
-        let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-        const produces = ['application/json', 'application/yaml'];
-        // give precedence to 'application/json'
-        if (produces.indexOf('application/json') >= 0) {
-            localVarHeaderParams.Accept = 'application/json';
-        } else {
-            localVarHeaderParams.Accept = produces.join(',');
-        }
-        let localVarFormParams: any = {};
 
-        // verify required parameter 'name' is not null or undefined
-        if (name === null || name === undefined) {
-            throw new Error(
-                'Required parameter name was null or undefined when calling replaceNamespacedFederatedAddonsDeploymentStatus.',
-            );
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
         }
 
-        // verify required parameter 'namespace' is not null or undefined
-        if (namespace === null || namespace === undefined) {
-            throw new Error(
-                'Required parameter namespace was null or undefined when calling replaceNamespacedFederatedAddonsDeploymentStatus.',
-            );
-        }
-
-        // verify required parameter 'body' is not null or undefined
-        if (body === null || body === undefined) {
-            throw new Error(
-                'Required parameter body was null or undefined when calling replaceNamespacedFederatedAddonsDeploymentStatus.',
-            );
-        }
-
-        if (pretty !== undefined) {
-            localVarQueryParameters['pretty'] = ObjectSerializer.serialize(pretty, 'string');
-        }
-
-        if (dryRun !== undefined) {
-            localVarQueryParameters['dryRun'] = ObjectSerializer.serialize(dryRun, 'string');
-        }
-
-        if (fieldManager !== undefined) {
-            localVarQueryParameters['fieldManager'] = ObjectSerializer.serialize(fieldManager, 'string');
-        }
-
-        (<any>Object).assign(localVarHeaderParams, options.headers);
-
-        let localVarUseFormData = false;
-
-        let localVarRequestOptions: localVarRequest.Options = {
-            method: 'PUT',
-            qs: localVarQueryParameters,
-            headers: localVarHeaderParams,
-            uri: localVarPath,
-            useQuerystring: this._useQuerystring,
-            json: true,
-            body: ObjectSerializer.serialize(body, 'object'),
-        };
-
-        let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.default.applyToRequest(localVarRequestOptions),
-        );
-        return authenticationPromise.then(() => {
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -18688,7 +18458,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -18746,14 +18516,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -18801,7 +18578,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -18859,14 +18636,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -18914,7 +18698,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -18972,14 +18756,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -19027,7 +18818,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -19085,14 +18876,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -19140,7 +18938,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -19198,14 +18996,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -19253,7 +19058,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -19311,14 +19116,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -19366,7 +19178,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -19424,14 +19236,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -19479,7 +19298,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -19537,14 +19356,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -19592,7 +19418,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -19650,14 +19476,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -19705,7 +19538,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -19763,14 +19596,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -19818,7 +19658,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -19876,14 +19716,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -19931,7 +19778,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -19989,14 +19836,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -20044,7 +19898,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -20102,14 +19956,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -20157,7 +20018,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -20215,14 +20076,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -20270,7 +20138,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -20328,14 +20196,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -20383,7 +20258,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -20441,14 +20316,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -20496,7 +20378,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -20554,14 +20436,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -20609,7 +20498,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -20667,14 +20556,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -20722,7 +20618,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -20780,14 +20676,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -20835,7 +20738,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -20893,14 +20796,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -20948,7 +20858,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -21006,14 +20916,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -21061,7 +20978,7 @@ export class TypesKubefedIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -21119,14 +21036,21 @@ export class TypesKubefedIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;

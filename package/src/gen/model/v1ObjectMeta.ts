@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ManagedFieldsEntry } from './v1ManagedFieldsEntry';
 import { V1OwnerReference } from './v1OwnerReference';
 

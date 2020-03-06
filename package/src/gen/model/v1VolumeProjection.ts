@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ConfigMapProjection } from './v1ConfigMapProjection';
 import { V1DownwardAPIProjection } from './v1DownwardAPIProjection';
 import { V1SecretProjection } from './v1SecretProjection';

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1VirtualGroupSpecSubjects } from './ioMesosphereKommanderV1beta1VirtualGroupSpecSubjects';
 
 /**

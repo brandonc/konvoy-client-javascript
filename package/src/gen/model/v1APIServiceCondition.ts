@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * APIServiceCondition describes the state of an APIService at a particular point
  */

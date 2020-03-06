@@ -28,8 +28,8 @@ import { IoVeleroV1VolumeSnapshotLocationList } from '../model/ioVeleroV1VolumeS
 import { V1DeleteOptions } from '../model/v1DeleteOptions';
 import { V1Status } from '../model/v1Status';
 
-import { ObjectSerializer, Authentication, VoidAuth } from '../model/models';
-import { HttpBasicAuth, ApiKeyAuth, OAuth } from '../model/models';
+import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models';
+import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models';
 
 import { HttpError, RequestFile } from './apis';
 
@@ -45,13 +45,15 @@ export enum VeleroIoV1ApiApiKeys {
 
 export class VeleroIoV1Api {
     protected _basePath = defaultBasePath;
-    protected defaultHeaders: any = {};
+    protected _defaultHeaders: any = {};
     protected _useQuerystring: boolean = false;
 
     protected authentications = {
         default: <Authentication>new VoidAuth(),
         BearerToken: new ApiKeyAuth('header', 'authorization'),
     };
+
+    protected interceptors: Interceptor[] = [];
 
     constructor(basePath?: string);
     constructor(basePathOrUsername: string, password?: string, basePath?: string) {
@@ -74,6 +76,14 @@ export class VeleroIoV1Api {
         this._basePath = basePath;
     }
 
+    set defaultHeaders(defaultHeaders: any) {
+        this._defaultHeaders = defaultHeaders;
+    }
+
+    get defaultHeaders() {
+        return this._defaultHeaders;
+    }
+
     get basePath() {
         return this._basePath;
     }
@@ -84,6 +94,10 @@ export class VeleroIoV1Api {
 
     public setApiKey(key: VeleroIoV1ApiApiKeys, value: string) {
         (this.authentications as any)[VeleroIoV1ApiApiKeys[key]].apiKey = value;
+    }
+
+    public addInterceptor(interceptor: Interceptor) {
+        this.interceptors.push(interceptor);
     }
 
     /**
@@ -109,7 +123,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -160,14 +174,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -214,7 +235,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -265,14 +286,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -319,7 +347,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -370,14 +398,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -424,7 +459,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -475,14 +510,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -529,7 +571,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -580,14 +622,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -634,7 +683,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -685,14 +734,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -739,7 +795,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -790,14 +846,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -844,7 +907,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -895,14 +958,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -949,7 +1019,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1000,14 +1070,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1054,7 +1131,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1105,14 +1182,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1159,7 +1243,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1210,14 +1294,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1274,7 +1365,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1347,14 +1438,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1411,7 +1509,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1484,14 +1582,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1548,7 +1653,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1621,14 +1726,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1685,7 +1797,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1758,14 +1870,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1822,7 +1941,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1895,14 +2014,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -1959,7 +2085,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2032,14 +2158,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2096,7 +2229,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2169,14 +2302,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2233,7 +2373,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2306,14 +2446,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2370,7 +2517,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2443,14 +2590,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2507,7 +2661,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2580,14 +2734,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2644,7 +2805,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2717,14 +2878,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2776,7 +2944,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2844,14 +3012,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -2903,7 +3078,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -2971,14 +3146,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3030,7 +3212,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3098,14 +3280,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3157,7 +3346,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3225,14 +3414,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3284,7 +3480,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3352,14 +3548,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3411,7 +3614,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3479,14 +3682,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3538,7 +3748,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3606,14 +3816,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3665,7 +3882,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3733,14 +3950,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3792,7 +4016,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3860,14 +4084,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -3919,7 +4150,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -3987,14 +4218,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4046,7 +4284,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4114,14 +4352,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4171,7 +4416,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1BackupList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/backups';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4237,14 +4482,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4300,7 +4552,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1BackupStorageLocationList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/backupstoragelocations';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4366,14 +4618,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4429,7 +4688,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1DeleteBackupRequestList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/deletebackuprequests';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4495,14 +4754,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4558,7 +4824,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1DownloadRequestList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/downloadrequests';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4624,14 +4890,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4694,7 +4967,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4767,14 +5040,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4837,7 +5117,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -4910,14 +5190,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -4980,7 +5267,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5053,14 +5340,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5123,7 +5417,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5196,14 +5490,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5266,7 +5567,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5339,14 +5640,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5409,7 +5717,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5482,14 +5790,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5552,7 +5867,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5625,14 +5940,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5695,7 +6017,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5768,14 +6090,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5838,7 +6167,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -5911,14 +6240,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -5981,7 +6317,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6054,14 +6390,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6124,7 +6467,7 @@ export class VeleroIoV1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6197,14 +6540,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6257,7 +6607,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1PodVolumeBackupList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/podvolumebackups';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6323,14 +6673,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6386,7 +6743,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1PodVolumeRestoreList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/podvolumerestores';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6452,14 +6809,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6515,7 +6879,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1ResticRepositoryList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/resticrepositories';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6581,14 +6945,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6644,7 +7015,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1RestoreList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/restores';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6710,14 +7081,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6773,7 +7151,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1ScheduleList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/schedules';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6839,14 +7217,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -6902,7 +7287,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1ServerStatusRequestList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/serverstatusrequests';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -6968,14 +7353,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7031,7 +7423,7 @@ export class VeleroIoV1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoVeleroV1VolumeSnapshotLocationList }> {
         const localVarPath = this.basePath + '/apis/velero.io/v1/volumesnapshotlocations';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7097,14 +7489,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7155,7 +7554,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7213,14 +7612,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7268,7 +7674,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7326,14 +7732,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7381,7 +7794,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7439,14 +7852,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7494,7 +7914,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7552,14 +7972,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7607,7 +8034,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7665,14 +8092,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7720,7 +8154,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7778,14 +8212,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7833,7 +8274,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -7891,14 +8332,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -7946,7 +8394,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8004,14 +8452,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8059,7 +8514,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8117,14 +8572,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8172,7 +8634,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8230,14 +8692,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8285,7 +8754,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8343,14 +8812,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8394,7 +8870,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8443,14 +8919,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8494,7 +8977,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8543,14 +9026,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8594,7 +9084,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8643,14 +9133,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8694,7 +9191,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8743,14 +9240,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8794,7 +9298,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8843,14 +9347,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8894,7 +9405,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -8943,14 +9454,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -8994,7 +9512,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9043,14 +9561,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9094,7 +9619,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9143,14 +9668,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9194,7 +9726,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9243,14 +9775,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9294,7 +9833,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9343,14 +9882,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9394,7 +9940,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9443,14 +9989,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9498,7 +10051,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9556,14 +10109,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9611,7 +10171,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9669,14 +10229,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9724,7 +10291,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9782,14 +10349,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9837,7 +10411,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -9895,14 +10469,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -9950,7 +10531,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10008,14 +10589,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10063,7 +10651,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10121,14 +10709,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10176,7 +10771,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10234,14 +10829,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10289,7 +10891,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10347,14 +10949,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10402,7 +11011,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10460,14 +11069,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10515,7 +11131,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10573,14 +11189,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -10628,7 +11251,7 @@ export class VeleroIoV1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -10686,14 +11309,21 @@ export class VeleroIoV1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;

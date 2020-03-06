@@ -10,7 +10,8 @@
  * Do not edit the class manually.
  */
 
-import { IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpec } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpec';
+import { RequestFile } from '../api';
+import { IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleSpec } from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleSpec';
 import { IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleStatus } from './ioMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleStatus';
 import { V1ObjectMeta } from './v1ObjectMeta';
 
@@ -27,7 +28,7 @@ export class IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRole {
      */
     'kind'?: string;
     'metadata'?: V1ObjectMeta;
-    'spec'?: IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpec;
+    'spec'?: IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleSpec;
     'status'?: IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleStatus;
 
     static discriminator: string | undefined = undefined;
@@ -51,7 +52,7 @@ export class IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRole {
         {
             name: 'spec',
             baseName: 'spec',
-            type: 'IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpec',
+            type: 'IoMesosphereKommanderWorkspacesV1alpha1WorkspaceRoleSpec',
         },
         {
             name: 'status',

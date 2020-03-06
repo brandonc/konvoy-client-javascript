@@ -18,8 +18,8 @@ import { IoMinMiniocontrollerV1beta1MinIOInstanceList } from '../model/ioMinMini
 import { V1DeleteOptions } from '../model/v1DeleteOptions';
 import { V1Status } from '../model/v1Status';
 
-import { ObjectSerializer, Authentication, VoidAuth } from '../model/models';
-import { HttpBasicAuth, ApiKeyAuth, OAuth } from '../model/models';
+import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models';
+import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models';
 
 import { HttpError, RequestFile } from './apis';
 
@@ -35,13 +35,15 @@ export enum MiniocontrollerMinIoV1beta1ApiApiKeys {
 
 export class MiniocontrollerMinIoV1beta1Api {
     protected _basePath = defaultBasePath;
-    protected defaultHeaders: any = {};
+    protected _defaultHeaders: any = {};
     protected _useQuerystring: boolean = false;
 
     protected authentications = {
         default: <Authentication>new VoidAuth(),
         BearerToken: new ApiKeyAuth('header', 'authorization'),
     };
+
+    protected interceptors: Interceptor[] = [];
 
     constructor(basePath?: string);
     constructor(basePathOrUsername: string, password?: string, basePath?: string) {
@@ -64,6 +66,14 @@ export class MiniocontrollerMinIoV1beta1Api {
         this._basePath = basePath;
     }
 
+    set defaultHeaders(defaultHeaders: any) {
+        this._defaultHeaders = defaultHeaders;
+    }
+
+    get defaultHeaders() {
+        return this._defaultHeaders;
+    }
+
     get basePath() {
         return this._basePath;
     }
@@ -74,6 +84,10 @@ export class MiniocontrollerMinIoV1beta1Api {
 
     public setApiKey(key: MiniocontrollerMinIoV1beta1ApiApiKeys, value: string) {
         (this.authentications as any)[MiniocontrollerMinIoV1beta1ApiApiKeys[key]].apiKey = value;
+    }
+
+    public addInterceptor(interceptor: Interceptor) {
+        this.interceptors.push(interceptor);
     }
 
     /**
@@ -99,7 +113,7 @@ export class MiniocontrollerMinIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -150,14 +164,21 @@ export class MiniocontrollerMinIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -214,7 +235,7 @@ export class MiniocontrollerMinIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -287,14 +308,21 @@ export class MiniocontrollerMinIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -346,7 +374,7 @@ export class MiniocontrollerMinIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -414,14 +442,21 @@ export class MiniocontrollerMinIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -471,7 +506,7 @@ export class MiniocontrollerMinIoV1beta1Api {
     ): Promise<{ response: http.IncomingMessage; body: IoMinMiniocontrollerV1beta1MinIOInstanceList }> {
         const localVarPath = this.basePath + '/apis/miniocontroller.min.io/v1beta1/minioinstances';
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -537,14 +572,21 @@ export class MiniocontrollerMinIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -607,7 +649,7 @@ export class MiniocontrollerMinIoV1beta1Api {
                 encodeURIComponent(String(namespace)),
             );
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -680,14 +722,21 @@ export class MiniocontrollerMinIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -741,7 +790,7 @@ export class MiniocontrollerMinIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -799,14 +848,21 @@ export class MiniocontrollerMinIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -850,7 +906,7 @@ export class MiniocontrollerMinIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -899,14 +955,21 @@ export class MiniocontrollerMinIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -954,7 +1017,7 @@ export class MiniocontrollerMinIoV1beta1Api {
                 .replace('{' + 'name' + '}', encodeURIComponent(String(name)))
                 .replace('{' + 'namespace' + '}', encodeURIComponent(String(namespace)));
         let localVarQueryParameters: any = {};
-        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
         const produces = ['application/json', 'application/yaml'];
         // give precedence to 'application/json'
         if (produces.indexOf('application/json') >= 0) {
@@ -1012,14 +1075,21 @@ export class MiniocontrollerMinIoV1beta1Api {
         };
 
         let authenticationPromise = Promise.resolve();
-        authenticationPromise = authenticationPromise.then(() =>
-            this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
-        );
-
+        if (this.authentications.BearerToken.apiKey) {
+            authenticationPromise = authenticationPromise.then(() =>
+                this.authentications.BearerToken.applyToRequest(localVarRequestOptions),
+            );
+        }
         authenticationPromise = authenticationPromise.then(() =>
             this.authentications.default.applyToRequest(localVarRequestOptions),
         );
-        return authenticationPromise.then(() => {
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
             if (Object.keys(localVarFormParams).length) {
                 if (localVarUseFormData) {
                     (<any>localVarRequestOptions).formData = localVarFormParams;

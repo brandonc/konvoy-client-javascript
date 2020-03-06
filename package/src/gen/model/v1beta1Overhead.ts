@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * Overhead structure represents the resource overhead associated with running a pod.
  */

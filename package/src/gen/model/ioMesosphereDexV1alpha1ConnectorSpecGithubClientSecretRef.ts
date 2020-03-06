@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * Reference to secret that contains the client ID and client secret. The secret should contain two keys `client-id` and `client-secret` like the following: ------- apiVersion: v1 kind: Secret metadata: name: github-client-secret type: Opaque data:   client-id: ...   client-secret: ...
  */

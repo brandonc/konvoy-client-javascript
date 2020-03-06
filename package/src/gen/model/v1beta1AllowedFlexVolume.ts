@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * AllowedFlexVolume represents a single Flexvolume that is allowed to be used.
  */

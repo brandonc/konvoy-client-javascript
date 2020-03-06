@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1EndpointAddress } from './v1EndpointAddress';
 import { V1EndpointPort } from './v1EndpointPort';
 

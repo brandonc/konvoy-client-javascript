@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace.
  */

@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * CustomResourceColumnDefinition specifies a column for server side printing.
  */

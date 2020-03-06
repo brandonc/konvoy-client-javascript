@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * IDRange provides a min/max of an allowed range of IDs.
  */

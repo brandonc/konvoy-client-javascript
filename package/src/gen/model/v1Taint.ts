@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * The node this Taint is attached to has the \"effect\" on any pod that does not tolerate the Taint.
  */

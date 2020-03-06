@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ServicePort } from './v1ServicePort';
 import { V1SessionAffinityConfig } from './v1SessionAffinityConfig';
 

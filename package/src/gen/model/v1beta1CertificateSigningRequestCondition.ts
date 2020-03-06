@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 export class V1beta1CertificateSigningRequestCondition {
     /**
      * timestamp for the last update to this condition

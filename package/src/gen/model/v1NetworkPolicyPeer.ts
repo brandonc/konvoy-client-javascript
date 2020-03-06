@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1IPBlock } from './v1IPBlock';
 import { V1LabelSelector } from './v1LabelSelector';
 

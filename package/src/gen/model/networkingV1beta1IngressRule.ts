@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { NetworkingV1beta1HTTPIngressRuleValue } from './networkingV1beta1HTTPIngressRuleValue';
 
 /**

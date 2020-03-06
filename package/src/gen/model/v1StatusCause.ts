@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * StatusCause provides more information about an api.Status failure, including cases when multiple errors are encountered.
  */

@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * AzureFile represents an Azure File Service mount on the host and bind mount to the pod.
  */

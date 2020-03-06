@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * StatefulSetCondition describes the state of a statefulset at a certain point.
  */

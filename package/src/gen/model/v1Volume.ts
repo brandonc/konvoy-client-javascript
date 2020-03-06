@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1AWSElasticBlockStoreVolumeSource } from './v1AWSElasticBlockStoreVolumeSource';
 import { V1AzureDiskVolumeSource } from './v1AzureDiskVolumeSource';
 import { V1AzureFileVolumeSource } from './v1AzureFileVolumeSource';

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1beta1ExternalDocumentation } from './v1beta1ExternalDocumentation';
 
 /**

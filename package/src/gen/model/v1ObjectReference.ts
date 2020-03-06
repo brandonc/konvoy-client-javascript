@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * ObjectReference contains enough information to let you inspect or modify the referred object.
  */

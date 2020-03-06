@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1beta1CustomResourceColumnDefinition } from './v1beta1CustomResourceColumnDefinition';
 import { V1beta1CustomResourceSubresources } from './v1beta1CustomResourceSubresources';
 import { V1beta1CustomResourceValidation } from './v1beta1CustomResourceValidation';

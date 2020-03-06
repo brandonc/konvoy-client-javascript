@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * NonResourceRule holds information that describes a rule for the non-resource
  */

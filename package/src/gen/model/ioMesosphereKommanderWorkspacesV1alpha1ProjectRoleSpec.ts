@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpecRules } from './ioMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpecRules';
 
 export class IoMesosphereKommanderWorkspacesV1alpha1ProjectRoleSpec {

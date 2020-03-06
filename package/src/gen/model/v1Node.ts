@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1NodeSpec } from './v1NodeSpec';
 import { V1NodeStatus } from './v1NodeStatus';
 import { V1ObjectMeta } from './v1ObjectMeta';

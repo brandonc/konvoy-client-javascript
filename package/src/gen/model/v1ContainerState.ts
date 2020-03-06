@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ContainerStateRunning } from './v1ContainerStateRunning';
 import { V1ContainerStateTerminated } from './v1ContainerStateTerminated';
 import { V1ContainerStateWaiting } from './v1ContainerStateWaiting';

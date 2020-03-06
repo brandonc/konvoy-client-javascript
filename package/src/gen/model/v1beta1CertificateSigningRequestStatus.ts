@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1beta1CertificateSigningRequestCondition } from './v1beta1CertificateSigningRequestCondition';
 
 export class V1beta1CertificateSigningRequestStatus {

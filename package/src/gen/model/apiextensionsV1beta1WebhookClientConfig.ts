@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { ApiextensionsV1beta1ServiceReference } from './apiextensionsV1beta1ServiceReference';
 
 /**

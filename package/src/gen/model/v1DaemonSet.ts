@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1DaemonSetSpec } from './v1DaemonSetSpec';
 import { V1DaemonSetStatus } from './v1DaemonSetStatus';
 import { V1ObjectMeta } from './v1ObjectMeta';

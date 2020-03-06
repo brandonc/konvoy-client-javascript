@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * ServiceReference holds a reference to Service.legacy.k8s.io
  */

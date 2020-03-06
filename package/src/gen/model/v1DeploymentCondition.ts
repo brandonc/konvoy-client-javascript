@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * DeploymentCondition describes the state of a deployment at a certain point.
  */

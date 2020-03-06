@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * LicenseReference holds a single reference to the secret holding the license JWT
  */

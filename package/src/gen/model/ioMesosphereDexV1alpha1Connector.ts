@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereDexV1alpha1ConnectorSpec } from './ioMesosphereDexV1alpha1ConnectorSpec';
 import { V1ObjectMeta } from './v1ObjectMeta';
 

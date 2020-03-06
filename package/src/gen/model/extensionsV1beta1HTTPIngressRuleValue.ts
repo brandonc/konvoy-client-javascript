@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { ExtensionsV1beta1HTTPIngressPath } from './extensionsV1beta1HTTPIngressPath';
 
 /**

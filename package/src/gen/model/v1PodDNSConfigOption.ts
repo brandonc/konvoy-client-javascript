@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * PodDNSConfigOption defines DNS resolver options of a pod.
  */

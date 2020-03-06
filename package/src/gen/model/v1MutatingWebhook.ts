@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { AdmissionregistrationV1WebhookClientConfig } from './admissionregistrationV1WebhookClientConfig';
 import { V1LabelSelector } from './v1LabelSelector';
 import { V1RuleWithOperations } from './v1RuleWithOperations';

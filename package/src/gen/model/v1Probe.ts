@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ExecAction } from './v1ExecAction';
 import { V1HTTPGetAction } from './v1HTTPGetAction';
 import { V1TCPSocketAction } from './v1TCPSocketAction';

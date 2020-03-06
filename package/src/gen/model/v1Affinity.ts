@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1NodeAffinity } from './v1NodeAffinity';
 import { V1PodAffinity } from './v1PodAffinity';
 import { V1PodAntiAffinity } from './v1PodAntiAffinity';

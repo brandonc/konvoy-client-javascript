@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * ReplicationControllerCondition describes the state of a replication controller at a certain point.
  */

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ObjectMeta } from './v1ObjectMeta';
 import { V1SelfSubjectRulesReviewSpec } from './v1SelfSubjectRulesReviewSpec';
 import { V1SubjectRulesReviewStatus } from './v1SubjectRulesReviewStatus';

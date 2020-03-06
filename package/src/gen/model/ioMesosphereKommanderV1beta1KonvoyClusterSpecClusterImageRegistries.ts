@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * ImageRegistry describes the docker image registries that are automatically configured to be used by the ContainerRuntime
  */

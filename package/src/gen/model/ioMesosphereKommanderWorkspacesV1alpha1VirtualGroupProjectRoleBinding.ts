@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingSpec } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingSpec';
 import { IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingStatus } from './ioMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingStatus';
 import { V1ObjectMeta } from './v1ObjectMeta';
@@ -27,7 +28,7 @@ export class IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindi
      */
     'kind'?: string;
     'metadata'?: V1ObjectMeta;
-    'spec'?: IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingSpec;
+    'spec': IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingSpec;
     'status'?: IoMesosphereKommanderWorkspacesV1alpha1VirtualGroupProjectRoleBindingStatus;
 
     static discriminator: string | undefined = undefined;

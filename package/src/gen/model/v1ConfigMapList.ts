@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ConfigMap } from './v1ConfigMap';
 import { V1ListMeta } from './v1ListMeta';
 

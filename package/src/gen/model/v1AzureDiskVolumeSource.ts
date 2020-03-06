@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
  */

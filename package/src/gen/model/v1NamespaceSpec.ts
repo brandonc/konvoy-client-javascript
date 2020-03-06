@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * NamespaceSpec describes the attributes on a Namespace.
  */

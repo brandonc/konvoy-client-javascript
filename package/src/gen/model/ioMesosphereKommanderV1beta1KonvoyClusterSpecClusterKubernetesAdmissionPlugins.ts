@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 export class IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterKubernetesAdmissionPlugins {
     'disabled'?: Array<string>;
     'enabled'?: Array<string>;

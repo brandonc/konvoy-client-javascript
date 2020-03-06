@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V2beta2ExternalMetricSource } from './v2beta2ExternalMetricSource';
 import { V2beta2ObjectMetricSource } from './v2beta2ObjectMetricSource';
 import { V2beta2PodsMetricSource } from './v2beta2PodsMetricSource';

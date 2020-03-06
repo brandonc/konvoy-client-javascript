@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * SSHCredentials describes the options passed to the provisioner regarding the ssh keys
  */

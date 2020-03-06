@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1NonResourceAttributes } from './v1NonResourceAttributes';
 import { V1ResourceAttributes } from './v1ResourceAttributes';
 

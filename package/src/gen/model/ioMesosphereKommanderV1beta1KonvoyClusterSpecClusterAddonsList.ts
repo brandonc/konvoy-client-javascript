@@ -10,8 +10,10 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
- * AddonConfig describes an addon to be installed on the cluster
+ * AddonConfig is a quick reference to an Addon
  */
 export class IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterAddonsList {
     'enabled': boolean;

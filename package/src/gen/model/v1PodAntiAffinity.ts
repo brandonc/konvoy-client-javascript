@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1PodAffinityTerm } from './v1PodAffinityTerm';
 import { V1WeightedPodAffinityTerm } from './v1WeightedPodAffinityTerm';
 

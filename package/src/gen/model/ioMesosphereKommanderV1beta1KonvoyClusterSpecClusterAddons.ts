@@ -10,12 +10,13 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterAddonsList } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterAddonsList';
 import { IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterHelmRepository } from './ioMesosphereKommanderV1beta1KonvoyClusterSpecClusterHelmRepository';
 
 export class IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterAddons {
     /**
-     * AddonConfigs is the list of AddonConfig entries
+     * AddonConfigs is a list of AddonConfig
      */
     'addonsList'?: Array<IoMesosphereKommanderV1beta1KonvoyClusterSpecClusterAddonsList>;
     'configRepository': string;

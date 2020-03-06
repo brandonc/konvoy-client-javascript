@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ControllerRevision } from './v1ControllerRevision';
 import { V1ListMeta } from './v1ListMeta';
 

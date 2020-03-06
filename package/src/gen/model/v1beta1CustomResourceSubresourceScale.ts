@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * CustomResourceSubresourceScale defines how to serve the scale subresource for CustomResources.
  */

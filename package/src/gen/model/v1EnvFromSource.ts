@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1ConfigMapEnvSource } from './v1ConfigMapEnvSource';
 import { V1SecretEnvSource } from './v1SecretEnvSource';
 

@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
+
 /**
  * VolumeNodeResources is a set of resource limits for scheduling of volumes.
  */

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { RequestFile } from '../api';
 import { V1LimitRangeSpec } from './v1LimitRangeSpec';
 import { V1ObjectMeta } from './v1ObjectMeta';
 
